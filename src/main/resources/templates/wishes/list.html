@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>내 위시 리스트</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { padding: 8px; border-bottom: 1px solid #ccc; text-align: center; }
+        img { width: 60px; }
+        .empty { padding: 40px; text-align: center; color: #777; }
+    </style>
+</head>
+<body>
+<h1>🛒 Wish List</h1>
+
+<div th:if="${msg}" style="color: green" th:text="${msg}"></div>
+
+<table th:if="${wishPage.content} and ${!wishPage.content.isEmpty()}">
+    <thead>
+    <tr><th>이미지</th><th>상품명</th><th>가격</th><th>수량</th><th></th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="item : ${wishPage.content}">
+        <td><img th:src="${item.imageUrl}" alt="thumbnail"/></td>
+        <td th:text="${item.name}"></td>
+        <td th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')}"></td>
+        <td th:text="${item.quantity}"></td>
+        <td>
+            <form th:action="@{|/wishes/${item.productId}/delete|}" method="post">
+                <button type="submit">🗑️</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<nav class="pagination">
+    <!-- Prev -->
+    <a class="page-link"
+       th:href="${wishPage.first}
+             ? null
+             : @{/wishes(page=${wishPage.number-1},size=${wishPage.size})}"
+       th:classappend="${wishPage.first} ? ' disabled'">
+        Prev
+    </a>
+
+    <!-- 페이지 번호 -->
+    <a th:each="i : ${#numbers.sequence(0, wishPage.totalPages - 1)}"
+       th:href="@{/wishes(page=${i},size=${wishPage.size})}"
+       th:classappend="${wishPage.number == i} ? 'active'"
+       class="page-link"
+       th:text="${i + 1}">
+        1
+    </a>
+
+    <!-- Next -->
+    <a class="page-link"
+       th:href="${wishPage.last}
+             ? null
+             : @{/wishes(page=${wishPage.number+1},size=${wishPage.size})}"
+       th:classappend="${wishPage.last} ? ' disabled'">
+        Next
+    </a>
+</nav>
+
+<div th:if="${wishPage.content.isEmpty()}" class="empty">
+    아직 담긴 상품이 없습니다 😥
+</div>
+
+<p><a th:href="@{/products}">← 상품 목록으로</a></p>
+</body>
+</html>

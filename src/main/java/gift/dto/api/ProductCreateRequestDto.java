@@ -1,11 +1,13 @@
 package gift.dto.api;
 
+import jakarta.validation.GroupSequence;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+@GroupSequence({ ProductCreateRequestDto.class, NotBlankCheck.class, PatternCheck.class })
 public class ProductCreateRequestDto {
 
     @NotBlank(message = "상품명은 필수입니다.")
@@ -22,9 +24,10 @@ public class ProductCreateRequestDto {
 
     @Pattern(
         regexp = "^(http|https)://.*$",
-        message = "유효한 이미지 URL이 아닙니다."
+        message = "유효한 이미지 URL이 아닙니다.",
+        groups  = PatternCheck.class
     )
-    @NotBlank(message = "이미지 URL은 필수입니다.")
+    @NotBlank(message = "이미지 URL은 필수입니다.", groups = NotBlankCheck.class)
     private String imageUrl;
 
     public ProductCreateRequestDto(String name, Integer price, String imageUrl) {

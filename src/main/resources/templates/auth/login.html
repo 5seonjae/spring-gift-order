@@ -12,5 +12,14 @@
   <button>로그인</button>
 </form>
 
+<a th:href="@{
+  https://kauth.kakao.com/oauth/authorize(
+    client_id=${@environment.getProperty('rest-api.clientId')},
+    redirect_uri='http://localhost:8080',
+    response_type='code',
+    scope='profile_nickname')}">
+  <img src="/img/kakao_login.png" alt="카카오 로그인">
+</a>
+
 <p><a th:href="@{/signup}">계정이 없으신가요? 회원가입</a></p>
 </body></html>

@@ -6,17 +6,23 @@ import gift.exception.InvalidCredentialsException;
 import gift.repository.MemberRepository;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {
 
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
+    private final KakaoOAuthService kakaoOAuthService;
 
-    public MemberService(MemberRepository memberRepository,
-        TokenService tokenService) {
+    public MemberService(
+        MemberRepository memberRepository,
+        TokenService tokenService,
+        KakaoOAuthService kakaoOAuthService
+    ) {
         this.memberRepository = memberRepository;
         this.tokenService = tokenService;
+        this.kakaoOAuthService = kakaoOAuthService;
     }
 
     // 회원 등록
@@ -49,5 +55,24 @@ public class MemberService {
             .orElseThrow(() -> new InvalidCredentialsException("이메일 또는 비밀번호가 올바르지 않습니다."));
 
         return member.getIsAdmin();
+    }
+
+    @Transactional
+    public String loginWithKakao(String code) {
+        // 1) 코드 → 토큰, 토큰 → 유저 정보
+        var tokenDto = kakaoOAuthService.exchangeCodeForToken(code);
+        var userDto  = kakaoOAuthService.fetchUserInfo(tokenDto.accessToken());
+
+        Long kakaoId   = userDto.id();
+        String nickname = userDto.nickname();
+
+        // 2) 카카오 ID로 회원 조회/가입
+        var member = memberRepository.findByKakaoId(kakaoId)
+            .orElseGet(() ->
+                memberRepository.save(new Member(kakaoId, nickname))
+            );
+
+        // 3) JWT 발급 (기존 TokenService 재활용)
+        return tokenService.generateToken(member.getId(), nickname);
     }
 }

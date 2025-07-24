@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -137,5 +138,13 @@ public class GlobalExceptionHandler {
         Map<String, String> error = new HashMap<>();
         error.put("error", e.getMessage());
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(KakaoOAuthException.class)
+    public ResponseEntity<ProblemDetail> handleKakaoOAuth(KakaoOAuthException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_GATEWAY);
+        pd.setTitle("카카오 OAuth 처리 오류");
+        pd.setDetail(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(pd);
     }
 }

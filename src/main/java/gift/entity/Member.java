@@ -19,14 +19,18 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin = false;
+
+    @Column(unique = true)
+    private Long kakaoId;
+
+    private String nickname;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WishItem> wishItems = new ArrayList<>();
@@ -43,6 +47,14 @@ public class Member {
 
     public Member(String email, String password) {
         this(null, email, password);
+    }
+
+    public Member(Long kakaoId, String nickname) {
+        if (kakaoId == null) {
+            throw new IllegalArgumentException("카카오 ID는 필수입니다.");
+        }
+        this.kakaoId  = kakaoId;
+        this.nickname = nickname;
     }
 
     private void validate(String email, String password) {
@@ -79,5 +91,13 @@ public class Member {
 
     public boolean getIsAdmin() {
         return isAdmin;
+    }
+
+    public Long getKakaoId() {
+        return kakaoId;
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 }

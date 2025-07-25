@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import java.io.IOException;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -97,10 +98,14 @@ public class AuthViewController {
         if (code != null) {
             String jwt = memberService.loginWithKakao(code);
 
-            Cookie authCookie = new Cookie("AUTH", jwt);
-            authCookie.setHttpOnly(true);
-            authCookie.setPath("/");
-            response.addCookie(authCookie);
+            ResponseCookie cookie = ResponseCookie.from("AUTH", jwt)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(Duration.ofHours(1))
+                .sameSite("Lax")
+                .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
             response.sendRedirect("/products");
         } else {

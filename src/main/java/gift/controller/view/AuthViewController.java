@@ -95,21 +95,20 @@ public class AuthViewController {
         @RequestParam(value = "code", required = false) String code,
         HttpServletResponse response
     ) throws IOException {
-        if (code != null) {
-            String jwt = memberService.loginWithKakao(code);
-
-            ResponseCookie cookie = ResponseCookie.from("AUTH", jwt)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(Duration.ofHours(1))
-                .sameSite("Lax")
-                .build();
-            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
-            response.sendRedirect("/products");
-        } else {
+        if (code == null) {
             response.sendRedirect("/login");
+            return;
         }
+
+        String jwt = memberService.loginWithKakao(code);
+        ResponseCookie cookie = ResponseCookie.from("AUTH", jwt)
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(Duration.ofHours(1))
+            .sameSite("Lax")
+            .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.sendRedirect("/products");
     }
 }

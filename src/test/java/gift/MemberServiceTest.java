@@ -2,7 +2,6 @@ package gift;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -19,28 +18,25 @@ import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.transaction.annotation.Transactional;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@Transactional
+@ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
 
-    @Autowired
+    @InjectMocks
     private MemberService memberService;
 
-    @MockitoBean
+    @Mock
     private MemberRepository memberRepository;
 
-    @MockitoBean
+    @Mock
     private KakaoOAuthService kakaoOAuthService;
 
-    @MockitoBean
+    @Mock
     private TokenService tokenService;
 
     @Test
@@ -48,15 +44,20 @@ class MemberServiceTest {
     void loginWithKakao_newMember() {
         String code = "code123";
         given(kakaoOAuthService.exchangeCodeForToken(code))
-            .willReturn(new KakaoTokenResponseDto("AT","RT",3600,"Bearer"));
-        Map<String,Object> accountMap = Map.of(
-            "profile", Map.of("nickname","Neo")
+            .willReturn(new KakaoTokenResponseDto(
+                "AT",
+                "RT",
+                3600,
+                "Bearer"
+            ));
+
+        Map<String, Object> accountMap = Map.of(
+            "profile", Map.of("nickname", "Neo")
         );
         given(kakaoOAuthService.fetchUserInfo("AT"))
             .willReturn(new KakaoUserResponseDto(999L, accountMap));
 
-        given(memberRepository.findByKakaoId(anyLong()))
-            .willReturn(Optional.empty());
+        given(memberRepository.findByKakaoId(999L)).willReturn(Optional.empty());
         given(memberRepository.save(any(Member.class)))
             .willAnswer(inv -> inv.getArgument(0));
 
@@ -68,8 +69,7 @@ class MemberServiceTest {
         assertThat(jwt).isEqualTo("JWT_TOKEN");
         ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
         then(memberRepository).should().save(captor.capture());
-        Member saved = captor.getValue();
-        assertThat(saved.getNickname()).isEqualTo("Neo");
+        assertThat(captor.getValue().getNickname()).isEqualTo("Neo");
     }
 
     @Test
@@ -77,16 +77,21 @@ class MemberServiceTest {
     void loginWithKakao_existingMember() {
         String code = "code456";
         given(kakaoOAuthService.exchangeCodeForToken(code))
-            .willReturn(new KakaoTokenResponseDto("AT2","RT2",3600,"Bearer"));
-        Map<String,Object> accountMap = Map.of(
-            "profile", Map.of("nickname","Old")
+            .willReturn(new KakaoTokenResponseDto(
+                "AT2",
+                "RT2",
+                3600,
+                "Bearer"
+            ));
+
+        Map<String, Object> accountMap = Map.of(
+            "profile", Map.of("nickname", "Old")
         );
         given(kakaoOAuthService.fetchUserInfo("AT2"))
             .willReturn(new KakaoUserResponseDto(123L, accountMap));
 
         Member existing = new Member(123L, "Old");
-        given(memberRepository.findByKakaoId(123L))
-            .willReturn(Optional.of(existing));
+        given(memberRepository.findByKakaoId(123L)).willReturn(Optional.of(existing));
 
         given(tokenService.generateToken(any(), anyString()))
             .willReturn("JWT_OLD");

@@ -17,6 +17,7 @@ import gift.service.MemberService;
 import gift.service.TokenService;
 import java.util.Map;
 import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ class MemberServiceTest {
     private TokenService tokenService;
 
     @Test
+    @DisplayName("[성공] 신규 카카오 회원 로그인 시 DB에 저장하고 JWT 반환")
     void loginWithKakao_newMember() {
         String code = "code123";
         given(kakaoOAuthService.exchangeCodeForToken(code))
@@ -71,6 +73,7 @@ class MemberServiceTest {
     }
 
     @Test
+    @DisplayName("[성공] 기존 카카오 회원 로그인 시 DB 저장 없이 JWT 반환")
     void loginWithKakao_existingMember() {
         String code = "code456";
         given(kakaoOAuthService.exchangeCodeForToken(code))

@@ -47,6 +47,7 @@ class KakaoOAuthServiceTest {
     }
 
     @Test
+    @DisplayName("[성공] 인가 코드를 액세스 토큰으로 교환한다")
     void exchangeCodeForToken_success() {
         server.enqueue(new MockResponse()
             .setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -67,6 +68,7 @@ class KakaoOAuthServiceTest {
     }
 
     @Test
+    @DisplayName("[성공] 액세스 토큰으로 카카오 사용자 정보를 가져온다")
     void fetchUserInfo_success() {
         server.enqueue(new MockResponse()
             .setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
@@ -86,6 +88,7 @@ class KakaoOAuthServiceTest {
     }
 
     @Test
+    @DisplayName("[실패] 잘못된 인가 코드 → KakaoOAuthException 발생")
     void exchangeCodeForToken_error() {
         server.enqueue(new MockResponse().setResponseCode(400).setBody("bad grant"));
 
@@ -95,6 +98,7 @@ class KakaoOAuthServiceTest {
     }
 
     @Test
+    @DisplayName("[실패] 잘못된 액세스 토큰 → KakaoOAuthException 발생")
     void fetchUserInfo_error() {
         server.enqueue(new MockResponse().setResponseCode(401).setBody("unauthorized"));
 

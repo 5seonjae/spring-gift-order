@@ -3,13 +3,17 @@ package gift.service;
 import gift.dto.api.KakaoTokenResponseDto;
 import gift.dto.api.KakaoUserResponseDto;
 import gift.exception.KakaoOAuthException;
+import io.netty.channel.ChannelOption;
+import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
 
 @Service
 public class KakaoOAuthService {
@@ -39,7 +43,13 @@ public class KakaoOAuthService {
         this.authUrl    = authUrl;
         this.apiUrl     = apiUrl;
         this.redirectUri= redirectUri;
-        this.webClient = builder.build();
+        this.webClient = builder
+            .clientConnector(new ReactorClientHttpConnector(
+                HttpClient.create()
+                    .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 2_000)
+                    .responseTimeout(Duration.ofSeconds(3))
+            ))
+            .build();
     }
 
     public KakaoTokenResponseDto exchangeCodeForToken(String code) {
@@ -60,6 +70,7 @@ public class KakaoOAuthService {
                     )))
             )
             .bodyToMono(KakaoTokenResponseDto.class)
+            .timeout(Duration.ofSeconds(3))
             .block();
     }
 
@@ -76,6 +87,7 @@ public class KakaoOAuthService {
                     )))
             )
             .bodyToMono(KakaoUserResponseDto.class)
+            .timeout(Duration.ofSeconds(3))
             .block();
     }
 }

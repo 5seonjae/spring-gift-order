@@ -14,7 +14,7 @@ JWT_SECRET=
 JWT_EXPIRATION_MS=3600000
 
 # 3. 카카오 로그인 REST API 키 (Client ID)
-rest-api.clientId=eb0390277e09b0ef2defdaaeea2c88a8
+kakao.clientId=
 
 # 4. 카카오 OAuth2 인증 요청을 보낼 엔드포인트
 #    - 사용자에게 로그인/동의 화면을 보여주는 URL
@@ -31,6 +31,9 @@ kakao.redirect-uri=http://localhost:8080
 ```
 
 Jwt Secret 키는 임의의 Base64 로 인코딩된 문자열을 `JWT_SECRET=` 값에 넣어주면 됩니다.
+
+``kakao.client-id`` 에는 **앱의 REST API 키** 를 입력합니다.  
+이 값은 개인‧프로덕션 자격 증명이므로 **절대로 Git 레포지토리에 커밋하거나 공개 저장소에 노출하지 마세요.**
 
 ---
 

@@ -26,14 +26,11 @@ public class ProductRepositoryTest {
     @Test
     @DisplayName("save & findById: 저장된 상품을 조회할 수 있다")
     void save_and_findById_shouldWork() {
-        // given
         Product p = new Product("Chocolate", 1000, "http://example.com/img.png");
         productRepository.save(p);
 
-        // when
         Product found = productRepository.findById(p.getId()).orElseThrow();
 
-        // then
         assertThat(found.getName()).isEqualTo("Chocolate");
         assertThat(found.getPrice()).isEqualTo(1000);
         assertThat(found.getImageUrl()).isEqualTo("http://example.com/img.png");
@@ -55,7 +52,6 @@ public class ProductRepositoryTest {
         boolean expectedPrev,
         boolean expectedNext
     ) {
-        // given — 기존 데이터 삭제 후 3개 상품 저장
         productRepository.deleteAll();
         productRepository.saveAll(List.of(
                 new Product("A", 1, "http://exampleA.com/img.png"),
@@ -63,22 +59,19 @@ public class ProductRepositoryTest {
                 new Product("C", 3, "http://exampleC.com/img.png")
         ));
 
-        // when — 페이지 크기 1, id 내림차순 정렬
         Pageable pageable = PageRequest.of(
-            pageIndex,                             // page number
-            1,                                        // page size
-            Sort.by("id").descending()      // sort by id desc
+            pageIndex,
+            1,
+            Sort.by("id").descending()
         );
 
         Page<Product> page = productRepository.findAll(pageable);
 
-        // then — 메타데이터 검증 (공통값)
         assertThat(page.getTotalElements()).isEqualTo(3);
         assertThat(page.getTotalPages()).isEqualTo(3);
         assertThat(page.getNumber()).isEqualTo(pageIndex);
         assertThat(page.getSize()).isEqualTo(1);
 
-        // then — 콘텐츠 검증
         assertThat(page.getContent())
             .extracting(Product::getName)
             .containsExactly(expectedName);
@@ -89,7 +82,6 @@ public class ProductRepositoryTest {
             .extracting(Product::getImageUrl)
             .containsExactly(expectedImageUrl);
 
-        // then — 네비게이션 플래그 검증
         assertThat(page.isFirst()).isEqualTo(expectedFirst);
         assertThat(page.hasPrevious()).isEqualTo(expectedPrev);
         assertThat(page.hasNext()).isEqualTo(expectedNext);

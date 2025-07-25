@@ -33,7 +33,6 @@
       <td><img th:src="${product.imageUrl}" width="80" /></td>
       <td><a th:href="@{'/products/' + ${product.id}}">상세보기</a></td>
       <td class="actions">
-        <!-- 🆕 Wish 추가 폼 -->
         <form th:action="@{'/wishes/' + ${product.id}}" method="post" style="display:inline">
           <button type="submit">🤍 찜</button>
         </form>
@@ -43,7 +42,6 @@
   </table>
 
   <nav class="pagination">
-    <!-- Prev -->
     <a class="page-link"
        th:href="${page.first}
              ? null
@@ -52,7 +50,6 @@
       Prev
     </a>
 
-    <!-- 페이지 번호 -->
     <a th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
        th:href="@{/products(page=${i},size=${page.size})}"
        th:classappend="${page.number == i} ? 'active'"
@@ -61,7 +58,6 @@
       1
     </a>
 
-    <!-- Next -->
     <a class="page-link"
        th:href="${page.last}
              ? null

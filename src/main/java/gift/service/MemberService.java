@@ -59,20 +59,18 @@ public class MemberService {
 
     @Transactional
     public String loginWithKakao(String code) {
-        // 1) 코드 → 토큰, 토큰 → 유저 정보
+
         var tokenDto = kakaoOAuthService.exchangeCodeForToken(code);
         var userDto  = kakaoOAuthService.fetchUserInfo(tokenDto.accessToken());
 
         Long kakaoId   = userDto.id();
         String nickname = userDto.nickname();
 
-        // 2) 카카오 ID로 회원 조회/가입
         var member = memberRepository.findByKakaoId(kakaoId)
             .orElseGet(() ->
                 memberRepository.save(new Member(kakaoId, nickname))
             );
 
-        // 3) JWT 발급 (기존 TokenService 재활용)
         return tokenService.generateToken(member.getId(), nickname);
     }
 }

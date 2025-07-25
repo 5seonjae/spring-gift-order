@@ -20,15 +20,12 @@ public class MemberRepositoryTest {
     @Test
     @DisplayName("findByEmail & existsByEmail: 저장된 이메일에 대해 조회 및 존재 확인")
     void findByEmail_and_existsByEmail_shouldWork() {
-        // given
         Member m = new Member("user@example.com", "secret");
         memberRepository.save(m);
 
-        // when
         Optional<Member> found = memberRepository.findByEmail("user@example.com");
         boolean exists = memberRepository.existsByEmail("user@example.com");
 
-        // then
         assertThat(found).isPresent();
         assertThat(found.get().getEmail()).isEqualTo("user@example.com");
         assertThat(found.get().getIsAdmin()).isFalse();

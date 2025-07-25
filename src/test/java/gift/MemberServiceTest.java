@@ -44,7 +44,6 @@ class MemberServiceTest {
 
     @Test
     void loginWithKakao_newMember() {
-        // given
         String code = "code123";
         given(kakaoOAuthService.exchangeCodeForToken(code))
             .willReturn(new KakaoTokenResponseDto("AT","RT",3600,"Bearer"));
@@ -62,10 +61,8 @@ class MemberServiceTest {
         given(tokenService.generateToken(any(), anyString()))
             .willReturn("JWT_TOKEN");
 
-        // when
         String jwt = memberService.loginWithKakao(code);
 
-        // then
         assertThat(jwt).isEqualTo("JWT_TOKEN");
         ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
         then(memberRepository).should().save(captor.capture());
@@ -75,7 +72,6 @@ class MemberServiceTest {
 
     @Test
     void loginWithKakao_existingMember() {
-        // given
         String code = "code456";
         given(kakaoOAuthService.exchangeCodeForToken(code))
             .willReturn(new KakaoTokenResponseDto("AT2","RT2",3600,"Bearer"));
@@ -92,10 +88,8 @@ class MemberServiceTest {
         given(tokenService.generateToken(any(), anyString()))
             .willReturn("JWT_OLD");
 
-        // when
         String jwt = memberService.loginWithKakao(code);
 
-        // then
         assertThat(jwt).isEqualTo("JWT_OLD");
         then(memberRepository).should(never()).save(any());
     }

@@ -23,11 +23,9 @@ public class ProductViewRequestDto {
     @NotBlank(message = "이미지 URL을 입력해주세요.")
     private String imageUrl;
 
-    // 기본 생성자
     public ProductViewRequestDto() {
     }
 
-    // Getter / Setter
     public String getName() {
         return name;
     }

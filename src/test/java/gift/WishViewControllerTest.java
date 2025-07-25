@@ -56,18 +56,15 @@ public class WishViewControllerTest {
     @MockitoBean
     private LoginMemberArgumentResolver loginMemberArgumentResolver;
 
-    Member member;        // 매 테스트에서 사용할 로그인 회원
+    Member member;
 
     @BeforeEach
     void setUp() {
-        // (1) 테스트용 회원 저장
         member = memberRepository.save(new Member("test@example.com", "pwd1234"));
 
-        // (2) ArgumentResolver 목 스텁
         given(loginMemberArgumentResolver.supportsParameter(any(MethodParameter.class)))
                 .willAnswer(invocation -> {
                     MethodParameter param = invocation.getArgument(0);
-                    // 오직 @LoginMember가 붙은 Member 파라미터만 true
                     return param.hasParameterAnnotation(LoginMember.class)
                             && Member.class.equals(param.getParameterType());
                 });
@@ -77,26 +74,22 @@ public class WishViewControllerTest {
                 NativeWebRequest req = invocation.getArgument(2);
                 String header = req.getHeader("Authorization");
                 if (header == null) {
-                    // 헤더 누락 → 401 Unauthorized
                     throw new MissingAuthorizationHeaderException("Authorization 헤더가 필요합니다.");
                 }
                 if (!header.startsWith("Bearer ")) {
-                    // 헤더 형식 오류 → 401 Unauthorized
                     throw new InvalidAuthorizationHeaderException(
                         "Authorization 헤더 형식이 올바르지 않습니다.");
                 }
-                return member; // 항상 로그인 성공
+                return member;
             });
     }
 
     @Test
     @DisplayName("POST /wishes/{id} – 정상 추가 ⇒ Found")
     void addWish_success_redirect() throws Exception {
-        // given 상품 1개 저장
         Product saved = productRepository.save(
             new Product("초콜릿", 1000, "https://image.com/choco.png"));
 
-        // when & then
         mockMvc.perform(post("/wishes/{id}", saved.getId())
                 .header("Authorization", "Bearer dummy-token"))
             .andExpect(status().isFound())
@@ -163,19 +156,16 @@ public class WishViewControllerTest {
                                 hasProperty("name", is("초콜릿"))
                         ))
                 ))
-                // price
                 .andExpect(model().attribute("wishPage",
                         hasProperty("content", contains(
                                 hasProperty("price", is(1000))
                         ))
                 ))
-                // imageUrl
                 .andExpect(model().attribute("wishPage",
                         hasProperty("content", contains(
                                 hasProperty("imageUrl", is("https://image.com/choco.png"))
                         ))
                 ))
-                // quantity
                 .andExpect(model().attribute("wishPage",
                         hasProperty("content", contains(
                                 hasProperty("quantity", is(1))
@@ -215,21 +205,18 @@ public class WishViewControllerTest {
                                 hasProperty("name", is("초콜릿"))
                         ))
                 ))
-                // price
                 .andExpect(model().attribute("wishPage",
                         hasProperty("content", contains(
                                 hasProperty("price", is(500)),
                                 hasProperty("price", is(1000))
                         ))
                 ))
-                // imageUrl
                 .andExpect(model().attribute("wishPage",
                         hasProperty("content", contains(
                                 hasProperty("imageUrl", is("https://image.com/candy.png")),
                                 hasProperty("imageUrl", is("https://image.com/choco.png"))
                         ))
                 ))
-                // quantity
                 .andExpect(model().attribute("wishPage",
                         hasProperty("content", contains(
                                 hasProperty("quantity", is(2)),
@@ -279,7 +266,6 @@ public class WishViewControllerTest {
         Product p = productRepository.save(
             new Product("젤리", 700, "https://image.com/jelly.png"));
 
-        // wishRepository 에는 넣지 않아 존재하지 않는 상태
         mockMvc.perform(post("/wishes/{productId}/delete", p.getId())
                 .header("Authorization", "Bearer dummy"))
             .andExpect(status().isNotFound())

@@ -74,10 +74,8 @@ public class AdminProductViewControllerTest {
     @DisplayName("[Form] 상품 등록 성공 - '카카오' 포함된 승인된 상품명")
     void createProduct_success_withApprovedName() throws Exception {
 
-        // '카카오' 포함된 승인된 상품명 추가
         approvedProductRepository.save(new ApprovedProduct("카카오 프렌즈 볼펜"));
 
-        // when & then
         mockMvc.perform(post("/admin/products/new")
                 .param("name", "카카오 프렌즈 볼펜")
                 .param("price", "15000")
@@ -130,7 +128,7 @@ public class AdminProductViewControllerTest {
     @DisplayName("[Form] 상품 등록 실패 - 상품명에 허용되지 않은 문자 사용")
     void createProduct_fail_invalidNameCharacters() throws Exception {
         mockMvc.perform(post("/admin/products/new")
-                .param("name", "초콜릿%")      // 허용되지 않은 문자 '%' 사용
+                .param("name", "초콜릿%")
                 .param("price", "1000")
                 .param("imageUrl", "https://image.com/item.jpg")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
@@ -171,7 +169,7 @@ public class AdminProductViewControllerTest {
         mockMvc.perform(post("/admin/products/new")
                 .param("name", "정상 상품명")
                 .param("price", "1000")
-                .param("imageUrl", "invalid-url") // http/https 아님
+                .param("imageUrl", "invalid-url")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
             .andExpect(status().isOk())
             .andExpect(view().name("products/admin/form"))
@@ -197,7 +195,6 @@ public class AdminProductViewControllerTest {
         productRepository.save(new Product("초콜릿", 1000, "https://image.com/choco.jpg"));
         productRepository.save(new Product("캔디", 500, "https://image.com/candy.jpg"));
 
-        // 수행 & 검증
         mockMvc.perform(get("/admin/products"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("products/admin/list"))
@@ -304,7 +301,6 @@ public class AdminProductViewControllerTest {
     @Test
     @DisplayName("[Form] 상품 수정 성공 - '카카오' 포함된 승인된 상품명")
     void updateProduct_success_withApprovedName() throws Exception {
-        // '카카오' 포함된 승인된 상품명 추가
         approvedProductRepository.save(new ApprovedProduct("카카오 프렌즈 볼펜"));
 
         Product saved = productRepository.save(
@@ -366,7 +362,7 @@ public class AdminProductViewControllerTest {
         Long id = saved.getId();
 
         mockMvc.perform(post("/admin/products/{id}/edit", id)
-                .param("name", "1234567890123456")      // 16자
+                .param("name", "1234567890123456")
                 .param("price", "1500")
                 .param("imageUrl", "https://image.com/item.jpg")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))
@@ -384,7 +380,7 @@ public class AdminProductViewControllerTest {
         Long id = saved.getId();
 
         mockMvc.perform(post("/admin/products/{id}/edit", id)
-                .param("name", "초콜릿%")      // 허용되지 않은 문자 '%' 사용
+                .param("name", "초콜릿%")
                 .param("price", "1500")
                 .param("imageUrl", "https://image.com/item.jpg")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED))

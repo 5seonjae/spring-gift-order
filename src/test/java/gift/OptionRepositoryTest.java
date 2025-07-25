@@ -57,18 +57,15 @@ public class OptionRepositoryTest {
         boolean expectedPrev,
         boolean expectedNext
     ) {
-        // given ─ 옵션 3개 저장
         optionRepository.saveAll(List.of(
             new Option(product, "다크 초콜릿", 2),
             new Option(product, "화이트 초콜릿", 3),
             new Option(product, "아몬드 초콜릿", 4)
         ));
 
-        // when ─ pageSize=1, id desc
         Pageable pageable = PageRequest.of(pageIndex, 1, Sort.by("id").descending());
         Page<Option> page = optionRepository.findAllByProductId(product.getId(), pageable);
 
-        // then ─ 메타데이터
         assertThat(page.getTotalElements()).isEqualTo(3);
         assertThat(page.getTotalPages()).isEqualTo(3);
         assertThat(page.getNumber()).isEqualTo(pageIndex);
@@ -77,7 +74,6 @@ public class OptionRepositoryTest {
         assertThat(page.hasPrevious()).isEqualTo(expectedPrev);
         assertThat(page.hasNext()).isEqualTo(expectedNext);
 
-        // then ─ 콘텐츠 검증
         assertThat(page.getContent())
             .hasSize(1)
             .extracting(Option::getName, Option::getQuantity)

@@ -60,7 +60,7 @@ public class WishService {
 
         int rows = wishRepository.deleteByMemberIdAndProductId(member.getId(), productId);
 
-        if (rows == 0) {                               // ← 위시 항목 없었음
+        if (rows == 0) {
             throw new NoSuchElementException("위시 목록에 없는 상품입니다.");
         }
     }

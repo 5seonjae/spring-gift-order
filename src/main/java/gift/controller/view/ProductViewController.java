@@ -30,7 +30,6 @@ public class ProductViewController {
         this.optionService = optionService;
     }
 
-    // 상품 목록 화면
     @GetMapping
     public String getProducts(
         Model model,
@@ -41,7 +40,6 @@ public class ProductViewController {
         return "products/user/list";
     }
 
-    // 상품 개별 조회 요청 처리
     @GetMapping("/{id}")
     public String viewProductDetail(@PathVariable Long id,
         Model model,

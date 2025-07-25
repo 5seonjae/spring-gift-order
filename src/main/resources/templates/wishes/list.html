@@ -35,7 +35,6 @@
 </table>
 
 <nav class="pagination">
-    <!-- Prev -->
     <a class="page-link"
        th:href="${wishPage.first}
              ? null
@@ -44,7 +43,6 @@
         Prev
     </a>
 
-    <!-- 페이지 번호 -->
     <a th:each="i : ${#numbers.sequence(0, wishPage.totalPages - 1)}"
        th:href="@{/wishes(page=${i},size=${wishPage.size})}"
        th:classappend="${wishPage.number == i} ? 'active'"
@@ -53,7 +51,6 @@
         1
     </a>
 
-    <!-- Next -->
     <a class="page-link"
        th:href="${wishPage.last}
              ? null

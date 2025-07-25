@@ -54,7 +54,6 @@ public class ProductControllerTest {
     void createProduct_success_normalName() throws Exception {
         var dto = new ProductCreateRequestDto("초콜릿", 1000, "https://image.com/item.jpg");
 
-        // when & then
         mockMvc.perform(post("/api/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
@@ -68,12 +67,10 @@ public class ProductControllerTest {
     @Test
     @DisplayName("[API] 상품 등록 성공 - '카카오' 포함된 승인된 상품명")
     void createProduct_success_withApprovedName() throws Exception {
-        // '카카오' 포함된 승인된 상품명 추가
         approvedProductRepository.save(new ApprovedProduct("카카오 프렌즈 볼펜"));
 
         var dto = new ProductCreateRequestDto("카카오 프렌즈 볼펜", 15000, "https://image.com/item.jpg");
 
-        // when & then
         mockMvc.perform(post("/api/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
@@ -89,7 +86,6 @@ public class ProductControllerTest {
     void createProduct_fail_unapprovedKakaoName() throws Exception {
         var dto = new ProductCreateRequestDto("카카오 지갑", 15000, "https://image.com/item.jpg");
 
-        // when & then
         mockMvc.perform(post("/api/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
@@ -125,14 +121,12 @@ public class ProductControllerTest {
     @Test
     @DisplayName("[API] 상품 등록 실패 - 상품명에 허용되지 않은 문자 사용")
     void createProduct_fail_invalidNameCharacters() throws Exception {
-        // 준비: 허용되지 않은 특수문자가 포함된 상품명 DTO 생성
         var dto = new ProductCreateRequestDto(
-            "초@콜#릿!",   // 허용되지 않은 문자 포함
+            "초@콜#릿!",
             1000,
             "https://image.com/item.jpg"
         );
 
-        // 수행 & 검증
         mockMvc.perform(post("/api/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
@@ -192,14 +186,12 @@ public class ProductControllerTest {
     @Test
     @DisplayName("[API] 상품 등록 실패 - JSON 파싱 오류(400) - 가격에 문자를 넣는 경우")
     void createProduct_fail_invalidJsonFormat() throws Exception {
-        // 1) 잘못된 JSON 바디 직접 작성
         String badJson = "{"
             + "\"name\": \"초콜릿\","
-            + "\"price\": \"과자\","               // 숫자여야 할 필드에 문자열
+            + "\"price\": \"과자\","
             + "\"imageUrl\": \"https://image.com/item.jpg\""
             + "}";
 
-        // 2) perform 요청을 통해 GlobalExceptionHandler.handleHttpMessageNotReadable(...) 동작 검증
         mockMvc.perform(post("/api/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(badJson))
@@ -210,14 +202,12 @@ public class ProductControllerTest {
     @Test
     @DisplayName("[API] 상품 등록 실패 - JSON 파싱 오류(400) - 값 누락")
     void createProduct_fail_missingPrice() throws Exception {
-        // 1) 잘못된 JSON 바디 직접 작성 (price 필드 누락)
         String badJson = "{"
             + "\"name\": \"초콜릿\","
-            + "\"price\": ,"                                // price 값 누락
+            + "\"price\": ,"
             + "\"imageUrl\": \"https://image.com/item.jpg\""
             + "}";
 
-        // 2) perform 요청을 통해 GlobalExceptionHandler.handleHttpMessageNotReadable(...) 동작 검증
         mockMvc.perform(post("/api/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(badJson))
@@ -228,18 +218,14 @@ public class ProductControllerTest {
     @Test
     @DisplayName("[API] 상품 전체 조회 성공 - 200 OK")
     void getAllProducts_success() throws Exception {
-        // 준비: 여러 상품 저장
         productRepository.save(new Product("초콜릿", 1000, "https://image.com/choco.jpg"));
         productRepository.save(new Product("캔디", 500, "https://image.com/candy.jpg"));
 
-        // 수행 & 검증
         mockMvc.perform(get("/api/products")
                         .param("sort", "id,desc")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                // 배열 길이 검증
                 .andExpect(jsonPath("$.content.length()").value(2))
-                // 각 요소 필드 검증
                 .andExpect(jsonPath("$.content[0].name").value("캔디"))
                 .andExpect(jsonPath("$.content[0].price").value(500))
                 .andExpect(jsonPath("$.content[0].imageUrl").value("https://image.com/candy.jpg"))
@@ -251,11 +237,9 @@ public class ProductControllerTest {
     @Test
     @DisplayName("[API] 상품 조회 성공 - 200 OK")
     void getProduct_success() throws Exception {
-        // 준비: 상품 저장
         var saved = productRepository.save(new Product("초콜릿", 1000, "https://image.com/item.jpg"));
         Long id = saved.getId();
 
-        // 수행 & 검증
         mockMvc.perform(get("/api/products/{id}", id)
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -286,18 +270,15 @@ public class ProductControllerTest {
     @Test
     @DisplayName("[API] 상품 수정 성공 - 일반 상품명")
     void updateProduct_success_normalName() throws Exception {
-        // 준비: 기존 상품 저장
         var saved = productRepository.save(
             new Product("초콜릿", 1000, "https://image.com/item.jpg")
         );
         Long id = saved.getId();
 
-        // 수정 DTO
         var dto = new ProductUpdateRequestDto(
             "초콜릿 리미티드", 1200, "https://image.com/new.jpg"
         );
 
-        // 수행 & 검증
         mockMvc.perform(put("/api/products/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
@@ -311,8 +292,6 @@ public class ProductControllerTest {
     @Test
     @DisplayName("[API] 상품 수정 성공 - '카카오' 포함된 승인된 상품명")
     void updateProduct_success_withApprovedName() throws Exception {
-
-        // '카카오' 포함된 승인된 상품명 추가
         approvedProductRepository.save(new ApprovedProduct("카카오 프렌즈 볼펜"));
 
         var saved = productRepository.save(
@@ -324,7 +303,6 @@ public class ProductControllerTest {
             "카카오 프렌즈 볼펜", 3000, "https://image.com/new.jpg"
         );
 
-        // 수행 & 검증
         mockMvc.perform(put("/api/products/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dto)))
@@ -393,7 +371,7 @@ public class ProductControllerTest {
         Long id = saved.getId();
 
         var dto = new ProductUpdateRequestDto(
-            "",      // 빈 이름
+            "",
             1000,
             "https://image.com/item.jpg"
         );
@@ -414,7 +392,7 @@ public class ProductControllerTest {
         Long id = saved.getId();
 
         var dto = new ProductUpdateRequestDto(
-            "1234567890123456",      // 16자 문자열
+            "1234567890123456",
             1000,
             "https://image.com/item.jpg"
         );
@@ -435,7 +413,7 @@ public class ProductControllerTest {
         Long id = saved.getId();
 
         var dto = new ProductUpdateRequestDto(
-            "초콜릿%",      // 허용되지 않은 문자열 % 사용
+            "초콜릿%",
             1000,
             "https://image.com/item.jpg"
         );
@@ -564,7 +542,7 @@ public class ProductControllerTest {
         String badJson = "{"
             + "\"name\": \"다크 초콜릿\","
             + "\"price\": \"1500\","
-            + "\"imageUrl\": "              // imageUrl 값 누락
+            + "\"imageUrl\": "
             + "}";
 
         mockMvc.perform(put("/api/products/{id}", id)

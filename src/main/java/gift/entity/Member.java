@@ -62,8 +62,6 @@ public class Member {
             throw new IllegalArgumentException("이메일은 필수입니다.");
         }
 
-        // ".+@.+\\..+" : something@something.something 형태
-        // '.+' : 1자 이상의 아무 문자 / '@' : 반드시 @ 존재 / '\\.' 반드시 . 존재
         if (!email.matches(".+@.+\\..+")) {
             throw new IllegalArgumentException("유효한 이메일 형식이 아닙니다.");
         }

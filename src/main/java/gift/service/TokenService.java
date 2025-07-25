@@ -35,9 +35,9 @@ public class TokenService {
 
     public Claims parseClaims(String token) {
         return Jwts.parser()
-            .setSigningKey(key)   // 생성 때 사용한 key 그대로
+            .setSigningKey(key)
             .build()
             .parseClaimsJws(token)
-            .getBody();          // exp 검증까지 자동
+            .getBody();
     }
 }

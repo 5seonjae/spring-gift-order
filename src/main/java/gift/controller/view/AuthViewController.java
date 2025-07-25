@@ -89,32 +89,21 @@ public class AuthViewController {
         return "redirect:/login";
     }
 
-    /**
-     * 카카오 OAuth 콜백 처리
-     * - Redirect URI로 "/" 만 등록했을 때
-     * - code 파라미터가 있으면 토큰 교환 → JWT 발급 → HttpOnly 쿠키에 담아 루트로 리다이렉트
-     * - 없으면 로그인 페이지로 리다이렉트
-     */
     @GetMapping("/")
     public void kakaoCallback(
         @RequestParam(value = "code", required = false) String code,
         HttpServletResponse response
     ) throws IOException {
         if (code != null) {
-            // 1) 인가 코드 → JWT
             String jwt = memberService.loginWithKakao(code);
 
-            // 2) HttpOnly 쿠키에 JWT 담기
             Cookie authCookie = new Cookie("AUTH", jwt);
             authCookie.setHttpOnly(true);
             authCookie.setPath("/");
-            // 필요하다면 secure, maxAge 등 추가 설정
             response.addCookie(authCookie);
 
-            // 3) 로그인 후 메인 페이지(또는 원하는 URL)로
             response.sendRedirect("/products");
         } else {
-            // code 없으면 /login 화면으로
             response.sendRedirect("/login");
         }
     }

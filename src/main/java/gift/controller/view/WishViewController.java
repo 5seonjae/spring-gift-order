@@ -47,7 +47,7 @@ public class WishViewController {
     ) {
         wishService.addWishItemForMember(member, new WishRequestDto(productId, 1));
         ra.addFlashAttribute("msg", "위시 리스트에 담겼습니다!");
-        return "redirect:/products";            // 상품 목록으로 되돌리거나 /wishes 로
+        return "redirect:/products";
     }
 
     @PostMapping("/{productId}/delete")

@@ -38,31 +38,29 @@ public class ProductController {
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
 
-    // 상품 전체 조회
     @GetMapping
     public ResponseEntity<Page<Product>> getAllProducts(
         @PageableDefault(size = 5, sort = "id", direction = DESC) Pageable pageable
     ) {
         Page<Product> products = productService.getAllProducts(pageable);
-        return ResponseEntity.ok(products);  // 200 OK + JSON 배열
+        return ResponseEntity.ok(products);
     }
 
-    // 상품 개별 조회
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable long id) {
         Product product = productService.getProductById(id);
-        return ResponseEntity.ok(product); // 200 OK
+        return ResponseEntity.ok(product);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Product> updateProduct(@PathVariable long id, @RequestBody @Valid ProductUpdateRequestDto updateRequestDto) {
         Product updated = productService.updateProduct(id, updateRequestDto);
-        return ResponseEntity.ok(updated); // 200 OK
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable long id) {
         productService.deleteProduct(id);
-        return ResponseEntity.noContent().build(); // 204 No Content
+        return ResponseEntity.noContent().build();
     }
 }

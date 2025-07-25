@@ -20,7 +20,6 @@ class KakaoOAuthServiceTest {
     private MockWebServer server;
     private KakaoOAuthService service;
 
-    // 테스트용 상수
     private static final String CLIENT_ID    = "TEST-CLIENT";
     private static final String REDIRECT_URI = "http://localhost/callback";
 
@@ -29,12 +28,10 @@ class KakaoOAuthServiceTest {
         server = new MockWebServer();
         server.start();
 
-        // WebClient 를 MockWebServer URL로 바꿔서 생성
         WebClient.Builder builder = WebClient
             .builder()
             .baseUrl(server.url("/").toString());;
 
-        // authUrl/apiUrl/redirectUri/clientId/builder 모두 직접 주입
         service = new KakaoOAuthService(
             CLIENT_ID,
             server.url("/oauth").toString(),   // authUrl
@@ -51,7 +48,6 @@ class KakaoOAuthServiceTest {
 
     @Test
     void exchangeCodeForToken_success() {
-        // MockWebServer에 토큰 교환 응답 세팅
         server.enqueue(new MockResponse()
             .setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .setBody("""
@@ -72,7 +68,6 @@ class KakaoOAuthServiceTest {
 
     @Test
     void fetchUserInfo_success() {
-        // 사용자 정보 조회 응답
         server.enqueue(new MockResponse()
             .setHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
             .setBody("""

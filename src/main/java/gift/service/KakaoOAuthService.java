@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 @Service
 public class KakaoOAuthService {
 
-    @Value("${rest-api.clientId}")
+    @Value("${kakao.clientId}")
     private final String clientId;
 
     @Value("${kakao.auth-url}")
@@ -29,7 +29,7 @@ public class KakaoOAuthService {
     private final WebClient webClient;
 
     public KakaoOAuthService(
-        @Value("${rest-api.clientId}") String clientId,
+        @Value("${kakao.clientId}") String clientId,
         @Value("${kakao.auth-url}") String authUrl,
         @Value("${kakao.api-url}") String apiUrl,
         @Value("${kakao.redirect-uri:}") String redirectUri,

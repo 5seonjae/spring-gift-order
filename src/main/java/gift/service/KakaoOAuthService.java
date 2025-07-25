@@ -54,10 +54,10 @@ public class KakaoOAuthService {
             .retrieve()
             .onStatus(HttpStatusCode::isError, resp ->
                 resp.bodyToMono(String.class)
-                    .flatMap(body -> Mono.error(
-                        new KakaoOAuthException(
-                            "토큰 교환 실패: " + resp.statusCode() + " - " + body)
-                    ))
+                    .flatMap(body -> Mono.error(new KakaoOAuthException(
+                        resp.statusCode(),
+                        "토큰 교환 실패: " + resp.statusCode() + " - " + body
+                    )))
             )
             .bodyToMono(KakaoTokenResponseDto.class)
             .block();
@@ -70,10 +70,10 @@ public class KakaoOAuthService {
             .retrieve()
             .onStatus(HttpStatusCode::isError, resp ->
                 resp.bodyToMono(String.class)
-                    .flatMap(body -> Mono.error(
-                        new KakaoOAuthException(
-                            "유저 정보 조회 실패: " + resp.statusCode() + " - " + body)
-                    ))
+                    .flatMap(body -> Mono.error(new KakaoOAuthException(
+                        resp.statusCode(),
+                        "유저 정보 조회 실패: " + resp.statusCode() + " - " + body
+                    )))
             )
             .bodyToMono(KakaoUserResponseDto.class)
             .block();

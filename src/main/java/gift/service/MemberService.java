@@ -1,5 +1,7 @@
 package gift.service;
 
+import gift.dto.api.KakaoTokenResponseDto;
+import gift.dto.api.KakaoUserResponseDto;
 import gift.dto.api.MemberRegisterRequestDto;
 import gift.entity.Member;
 import gift.exception.InvalidCredentialsException;
@@ -60,13 +62,13 @@ public class MemberService {
     @Transactional
     public String loginWithKakao(String code) {
 
-        var tokenDto = kakaoOAuthService.exchangeCodeForToken(code);
-        var userDto  = kakaoOAuthService.fetchUserInfo(tokenDto.accessToken());
+        KakaoTokenResponseDto tokenDto = kakaoOAuthService.exchangeCodeForToken(code);
+        KakaoUserResponseDto userDto  = kakaoOAuthService.fetchUserInfo(tokenDto.accessToken());
 
         Long kakaoId   = userDto.id();
         String nickname = userDto.nickname();
 
-        var member = memberRepository.findByKakaoId(kakaoId)
+        Member member = memberRepository.findByKakaoId(kakaoId)
             .orElseGet(() ->
                 memberRepository.save(new Member(kakaoId, nickname))
             );

@@ -35,7 +35,6 @@ public class AdminProductViewController {
         this.optionService = optionService;
     }
 
-    // 상품 목록 화면
     @GetMapping
     public String getProducts(
         Model model,
@@ -46,14 +45,12 @@ public class AdminProductViewController {
         return "products/admin/list";
     }
 
-    // 상품 등록 폼 화면
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("productRequest", new ProductViewRequestDto());
         return "products/admin/form";
     }
 
-    // 상품 등록 요청 처리
     @PostMapping("/new")
     public String createProduct(
         @Valid @ModelAttribute("productRequest") ProductViewRequestDto request,
@@ -79,7 +76,6 @@ public class AdminProductViewController {
         }
     }
 
-    // 상품 개별 조회 요청 처리
     @GetMapping("/{id}")
     public String viewProductDetail(@PathVariable Long id,
         Model model,
@@ -97,7 +93,6 @@ public class AdminProductViewController {
         }
     }
 
-    // 상품 수정 폼 보여주기
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable Long id, Model model) {
         Product product = productService.getProductById(id);
@@ -113,7 +108,6 @@ public class AdminProductViewController {
         return "products/admin/form";
     }
 
-    // 상품 수정 요청 처리
     @PostMapping("/{id}/edit")
     public String updateProduct(@PathVariable Long id,
         @Valid @ModelAttribute("productRequest") ProductViewRequestDto dto,
@@ -125,7 +119,6 @@ public class AdminProductViewController {
         }
 
         try {
-            // dto를 변환해서 넘김
             ProductUpdateRequestDto updateDto = new ProductUpdateRequestDto(
                 dto.getName(), dto.getPrice(), dto.getImageUrl()
             );
@@ -133,14 +126,12 @@ public class AdminProductViewController {
             productService.updateProduct(id, updateDto);
             return "redirect:/admin/products";
         } catch (IllegalArgumentException e) {
-            // 예외 메세지를 모델에 추가
             model.addAttribute("errorMessage", e.getMessage());
             return "products/admin/form";
         }
 
     }
 
-    // 상품 삭제 요청 처리
     @PostMapping("/{id}/delete")
     public String deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id); // 서비스 재사용

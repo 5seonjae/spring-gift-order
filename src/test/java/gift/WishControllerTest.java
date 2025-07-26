@@ -53,18 +53,15 @@ public class WishControllerTest {
     @MockitoBean
     private LoginMemberArgumentResolver loginMemberArgumentResolver;
 
-    Member member; // 매 테스트마다 사용할 로그인 회원
+    Member member;
 
     @BeforeEach
     void setUp() {
-        // (1) 테스트용 회원 저장
         member = memberRepository.save(new Member("test@example.com", "pwd1234"));
 
-        // (2) ArgumentResolver 목 스텁
         given(loginMemberArgumentResolver.supportsParameter(any(MethodParameter.class)))
                 .willAnswer(invocation -> {
                     MethodParameter param = invocation.getArgument(0);
-                    // 오직 @LoginMember가 붙은 Member 파라미터만 true
                     return param.hasParameterAnnotation(LoginMember.class)
                             && Member.class.equals(param.getParameterType());
                 });
@@ -74,28 +71,24 @@ public class WishControllerTest {
                 NativeWebRequest req = invocation.getArgument(2);
                 String header = req.getHeader("Authorization");
                 if (header == null) {
-                    // 헤더 누락 → 401 Unauthorized
                     throw new MissingAuthorizationHeaderException("Authorization 헤더가 필요합니다.");
                 }
                 if (!header.startsWith("Bearer ")) {
-                    // 헤더 형식 오류 → 401 Unauthorized
                     throw new InvalidAuthorizationHeaderException(
                         "Authorization 헤더 형식이 올바르지 않습니다.");
                 }
-                return member; // 항상 로그인 성공
+                return member;
             });
     }
 
     @Test
     @DisplayName("GET /api/wishes – 정상 조회 시 200 OK + JSON 배열 반환")
     void list_withValidAuth_shouldReturnWishItems() throws Exception {
-        // given
         var sampleProduct = new Product("초콜릿", 1000, "https://image.com/choco.png");
         Product saved = productRepository.save(sampleProduct);
         var sampleWishRequestDto = new WishRequestDto(saved.getId(), 2);
         wishService.addWishItemForMember(member, sampleWishRequestDto);
 
-        // when & then
         mockMvc.perform(get("/api/wishes")
                         .header("Authorization", "Bearer dummy-token")  // resolver가 mock이면 토큰 내용 무관
                         .param("page", "0")
@@ -105,7 +98,6 @@ public class WishControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                // 실제 리스트 값 검증
                 .andExpect(jsonPath("$.content", hasSize(1)))
                 .andExpect(jsonPath("$.content[0].productId").value(saved.getId()))
                 .andExpect(jsonPath("$.content[0].name").value("초콜릿"))
@@ -125,10 +117,8 @@ public class WishControllerTest {
                         .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
-                // 페이징된 결과의 content 배열이 비어 있는지 확인
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content").isEmpty())
-                // 페이징 메타데이터 검증
                 .andExpect(jsonPath("$.totalElements").value(0))
                 .andExpect(jsonPath("$.totalPages").value(0))
                 .andExpect(jsonPath("$.number").value(0))
@@ -139,13 +129,11 @@ public class WishControllerTest {
     @Test
     @DisplayName("GET /api/wishes – 여러 아이템 조회 (페이징)")
     void list_multipleItems_withPaging_shouldReturnAll() throws Exception {
-        // given
         var p1 = productRepository.save(new Product("초콜릿", 1000, "https://image.com/choco.png"));
         var p2 = productRepository.save(new Product("사탕",   500,  "https://image.com/candy.png"));
         wishService.addWishItemForMember(member, new WishRequestDto(p1.getId(), 1));
         wishService.addWishItemForMember(member, new WishRequestDto(p2.getId(), 3));
 
-        // when & then
         mockMvc.perform(get("/api/wishes")
                         .header("Authorization", "Bearer dummy-token")
                         .param("page", "0")
@@ -155,7 +143,6 @@ public class WishControllerTest {
                 )
                 .andExpect(status().isOk())
 
-                // — 메타데이터 검증 —
                 .andExpect(jsonPath("$.totalElements").value(2))
                 .andExpect(jsonPath("$.totalPages").value(1))
                 .andExpect(jsonPath("$.number").value(0))
@@ -164,7 +151,6 @@ public class WishControllerTest {
                 .andExpect(jsonPath("$.first").value(true))
                 .andExpect(jsonPath("$.last").value(true))
 
-                // — content 리스트 검증 (id 내림차순) —
                 .andExpect(jsonPath("$.content", hasSize(2)))
                 .andExpect(jsonPath("$.content[0].productId").value(p2.getId()))
                 .andExpect(jsonPath("$.content[0].name").value("사탕"))

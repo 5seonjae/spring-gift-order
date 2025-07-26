@@ -232,7 +232,6 @@ public class OptionControllerTest {
         @BeforeEach
         void init() {
             option = optionRepository.save(new Option(product, "다크 초콜릿", 10));
-            // duplicate 용
             optionRepository.save(new Option(product, "화이트 초콜릿", 5));
         }
 

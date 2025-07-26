@@ -47,7 +47,6 @@ public class MemberControllerTest {
     @Test
     @DisplayName("회원가입 실패 – 이메일 중복 → 409 Conflict + 메시지")
     void register_duplicateEmail() throws Exception {
-        // 먼저 한 번 가입시켜 둠
         MemberRegisterRequestDto req = new MemberRegisterRequestDto("dup@example.com",
             "password123");
 
@@ -56,7 +55,6 @@ public class MemberControllerTest {
                 .content(objectMapper.writeValueAsString(req)))
             .andExpect(status().isCreated());
 
-        // 같은 이메일로 다시 시도
         mockMvc.perform(post("/api/members")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(req)))
@@ -157,7 +155,6 @@ public class MemberControllerTest {
     @Test
     @DisplayName("로그인 실패 – 디코딩 오류/구분자 누락 → 401 Unauthorized + 메시지")
     void login_fail_invalidFormat() throws Exception {
-        // Base64로 인코딩했지만 콜론(:)이 없음
         String bad = Base64.getEncoder()
             .encodeToString("noconstr".getBytes(StandardCharsets.UTF_8));
 

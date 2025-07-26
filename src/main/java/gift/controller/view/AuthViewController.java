@@ -3,10 +3,13 @@ package gift.controller.view;
 import gift.dto.api.MemberRegisterRequestDto;
 import gift.exception.InvalidCredentialsException;
 import gift.service.MemberService;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -85,5 +88,27 @@ public class AuthViewController {
                 .build()
                 .toString());
         return "redirect:/login";
+    }
+
+    @GetMapping("/")
+    public void kakaoCallback(
+        @RequestParam(value = "code", required = false) String code,
+        HttpServletResponse response
+    ) throws IOException {
+        if (code == null) {
+            response.sendRedirect("/login");
+            return;
+        }
+
+        String jwt = memberService.loginWithKakao(code);
+        ResponseCookie cookie = ResponseCookie.from("AUTH", jwt)
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(Duration.ofHours(1))
+            .sameSite("Lax")
+            .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        response.sendRedirect("/products");
     }
 }

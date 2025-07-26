@@ -28,7 +28,6 @@ public class MemberController {
         this.basicAuthHeaderParser = basicAuthHeaderParser;
     }
 
-    // 회원 생성
     @PostMapping()
     public ResponseEntity<MemberRegisterResponseDto> createMember(
         @RequestBody @Valid MemberRegisterRequestDto requestDto

@@ -44,7 +44,6 @@ public class ProductViewControllerTest {
         productRepository.save(new Product("초콜릿", 1000, "https://image.com/choco.jpg"));
         productRepository.save(new Product("캔디", 500, "https://image.com/candy.jpg"));
 
-        // 수행 & 검증
         mockMvc.perform(get("/admin/products"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("products/admin/list"))

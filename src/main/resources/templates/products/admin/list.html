@@ -50,7 +50,6 @@
   </table>
 
   <nav class="pagination">
-    <!-- Prev -->
     <a class="page-link"
        th:href="${page.first}
              ? null
@@ -59,7 +58,6 @@
       Prev
     </a>
 
-    <!-- 페이지 번호 -->
     <a th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
        th:href="@{/admin/products(page=${i},size=${page.size})}"
        th:classappend="${page.number == i} ? 'active'"
@@ -68,7 +66,6 @@
       1
     </a>
 
-    <!-- Next -->
     <a class="page-link"
        th:href="${page.last}
              ? null

@@ -31,10 +31,6 @@ public class Product {
     protected Product() {
     }
 
-    /**
-     * DB에서 자동 생성되는 ID를 포함한 전체 필드 생성자 등록 시에는 id가 null 이므로 Long 으로 처리 Product는 불변 객체이기 때문에 생성자에서 모든
-     * 필드를 설정함
-     */
     public Product(Long id, String name, int price, String imageUrl) {
         validate(name, price, imageUrl);
 

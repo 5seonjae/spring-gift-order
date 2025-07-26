@@ -19,14 +19,18 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin = false;
+
+    @Column(unique = true)
+    private Long kakaoId;
+
+    private String nickname;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WishItem> wishItems = new ArrayList<>();
@@ -45,13 +49,19 @@ public class Member {
         this(null, email, password);
     }
 
+    public Member(Long kakaoId, String nickname) {
+        if (kakaoId == null) {
+            throw new IllegalArgumentException("카카오 ID는 필수입니다.");
+        }
+        this.kakaoId  = kakaoId;
+        this.nickname = nickname;
+    }
+
     private void validate(String email, String password) {
         if (email == null || email.isEmpty()) {
             throw new IllegalArgumentException("이메일은 필수입니다.");
         }
 
-        // ".+@.+\\..+" : something@something.something 형태
-        // '.+' : 1자 이상의 아무 문자 / '@' : 반드시 @ 존재 / '\\.' 반드시 . 존재
         if (!email.matches(".+@.+\\..+")) {
             throw new IllegalArgumentException("유효한 이메일 형식이 아닙니다.");
         }
@@ -79,5 +89,13 @@ public class Member {
 
     public boolean getIsAdmin() {
         return isAdmin;
+    }
+
+    public Long getKakaoId() {
+        return kakaoId;
+    }
+
+    public String getNickname() {
+        return nickname;
     }
 }

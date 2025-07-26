@@ -18,14 +18,11 @@ public class ApprovedProductRepositoryTest {
     @Test
     @DisplayName("existsByName: 저장된 이름에 대해 true 반환")
     void existsByName_shouldReturnTrue_whenNameExists() {
-        // given
         ApprovedProduct product = new ApprovedProduct("TestProduct");
         approvedProductRepository.save(product);
 
-        // when
         boolean exists = approvedProductRepository.existsByName("TestProduct");
 
-        // then
         assertThat(exists).isTrue();
     }
 

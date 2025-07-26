@@ -14,7 +14,7 @@
 
 <a th:href="@{
   https://kauth.kakao.com/oauth/authorize(
-    client_id=${@environment.getProperty('rest-api.clientId')},
+    client_id=${@environment.getProperty('kakao.clientId')},
     redirect_uri='http://localhost:8080',
     response_type='code',
     scope='profile_nickname')}">

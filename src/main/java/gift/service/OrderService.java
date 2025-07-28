@@ -61,6 +61,13 @@ public class OrderService {
         return saved;
     }
 
+    public void deleteOrderForMember(Member member, Long id) {
+        validateMember(member);
+        orderRepository.findById(id)
+            .orElseThrow(() -> new NoSuchElementException("주문을 찾을 수 없습니다."));
+        orderRepository.deleteById(id);
+    }
+
     private void validateMember(Member member) {
         if (member == null)
             throw new InvalidMemberException("유효하지 않은 회원입니다.");

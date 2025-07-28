@@ -11,6 +11,7 @@ import gift.exception.MissingAuthorizationHeaderException;
 import gift.repository.MemberRepository;
 import gift.repository.ProductRepository;
 import gift.service.WishService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,6 +70,20 @@ public class WishControllerTest {
         given(loginMemberArgumentResolver.resolveArgument(any(), any(), any(), any()))
             .willAnswer(invocation -> {
                 NativeWebRequest req = invocation.getArgument(2);
+                String header = req.getHeader("Authorization");
+                if (header == null) {
+                    throw new MissingAuthorizationHeaderException("Authorization 헤더가 필요합니다.");
+                }
+                if (!header.startsWith("Bearer ")) {
+                    throw new InvalidAuthorizationHeaderException(
+                        "Authorization 헤더 형식이 올바르지 않습니다.");
+                }
+                return member;
+            });
+
+        given(loginMemberArgumentResolver.resolve(any(HttpServletRequest.class)))
+            .willAnswer(invocation -> {
+                HttpServletRequest req = invocation.getArgument(0);
                 String header = req.getHeader("Authorization");
                 if (header == null) {
                     throw new MissingAuthorizationHeaderException("Authorization 헤더가 필요합니다.");

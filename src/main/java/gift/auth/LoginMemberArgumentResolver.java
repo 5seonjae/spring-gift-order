@@ -1,6 +1,8 @@
 package gift.auth;
 
 import gift.entity.Member;
+import gift.exception.InvalidAuthorizationHeaderException;
+import gift.exception.MissingAuthorizationHeaderException;
 import gift.repository.MemberRepository;
 import gift.service.TokenService;
 import gift.util.BearerAuthHeaderParser;
@@ -42,31 +44,26 @@ public class LoginMemberArgumentResolver
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter,
+    public Object resolveArgument(
+        MethodParameter parameter,
         ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest,
-        WebDataBinderFactory binderFactory) {
-        HttpServletRequest r = webRequest.getNativeRequest(HttpServletRequest.class);
-
-        String header = tokenExtractor.extractBearerHeader(r);
-        String token = authHeaderParser.extractBearerToken(header);
-        Claims claims = tokenService.parseClaims(token);
-        Long memberId = Long.valueOf(claims.getSubject());
-
-        return memberRepository.findById(memberId)
-            .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원입니다."));
+        WebDataBinderFactory binderFactory
+    ) {
+        HttpServletRequest req = webRequest.getNativeRequest(HttpServletRequest.class);
+        return extractMember(req);
     }
 
     public Member resolve(HttpServletRequest req) {
-        try {
-            return (Member) resolveArgument(
-                null,
-                null,
-                new ServletWebRequest(req),
-                null
-            );
-        } catch (Exception e) {
-            throw new IllegalStateException("LoginMemberArgumentResolver.resolve 호출 실패", e);
-        }
+        return extractMember(req);
+    }
+
+    private Member extractMember(HttpServletRequest req) {
+        String header = tokenExtractor.extractBearerHeader(req);
+        String token  = authHeaderParser .extractBearerToken(header);
+        Claims claims  = tokenService      .parseClaims(token);
+        Long memberId = Long.valueOf(claims.getSubject());
+        return memberRepository.findById(memberId)
+            .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원입니다."));
     }
 }

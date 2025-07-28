@@ -33,7 +33,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(kakaoTokenInterceptor)
             .addPathPatterns(
-                "/api/orders/**"
+                "/api/wishes/**",
+                "/api/orders/**",
+                "/api/products/**"
             )
             .order(Ordered.HIGHEST_PRECEDENCE);
     }

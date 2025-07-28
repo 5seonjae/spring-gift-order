@@ -1,9 +1,9 @@
-INSERT INTO products (name, price, image_url) VALUES ('초콜릿', 1000, 'http://localhost:8080/image/chocolate.webp');
-INSERT INTO products (name, price, image_url) VALUES ('새우깡', 1500, 'http://localhost:8080/image/shrimpCrackers.webp');
-INSERT INTO products (name, price, image_url) VALUES ('커피', 1500, 'http://localhost:8080/image/coffee.png');
-INSERT INTO products (name, price, image_url) VALUES ('김밥', 2000, 'http://localhost:8080/image/kimbap.png');
-INSERT INTO products (name, price, image_url) VALUES ('라면', 1000, 'http://localhost:8080/image/ramen.png');
-INSERT INTO products (name, price, image_url) VALUES ('젤리', 1000, 'http://localhost:8080/image/jelly.png');
+INSERT INTO products (name, price, image_url) VALUES ('초콜릿', 1000, 'https://i.imgur.com/ZU9CL58.png');
+INSERT INTO products (name, price, image_url) VALUES ('새우깡', 1500, 'https://i.imgur.com/YxTseJH.png');
+INSERT INTO products (name, price, image_url) VALUES ('커피', 1500, 'https://i.imgur.com/J55LFRc.png');
+INSERT INTO products (name, price, image_url) VALUES ('김밥', 2000, 'https://i.imgur.com/EA8US8c.png');
+INSERT INTO products (name, price, image_url) VALUES ('라면', 1000, 'https://i.imgur.com/NMp72cw.png');
+INSERT INTO products (name, price, image_url) VALUES ('젤리', 1000, 'https://i.imgur.com/sFFjwua.png');
 
 INSERT INTO approved_products (name) VALUES ('카카오 프렌즈 필통');
 INSERT INTO approved_products (name) VALUES ('카카오 프렌즈 인형');

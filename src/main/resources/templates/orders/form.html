@@ -16,11 +16,13 @@
       method="post">
 
   <label>옵션 선택</label>
-  <select th:field="*{optionId}" required>
+  <select th:field="*{optionId}"
+          th:data-product-price="${product.price}"
+          required>
     <option
         th:each="opt : ${product.options}"
         th:value="${opt.id}"
-        th:text="${opt.name + ' (' + opt.quantity + '개 재고 · ' + #numbers.formatInteger(product.price,0) + '원)'}"
+        th:text="${opt.name + ' (' + opt.quantity + '개 재고)'}"
         th:data-stock="${opt.quantity}">
     </option>
   </select>
@@ -31,7 +33,7 @@
          min="1"
          value="1" required/>
 
-  <p>총액: <span id="total" th:text="${#numbers.formatInteger(product.price,0)}">0</span>원</p>
+  <p>총합: <span id="total">0</span>원</p>
 
   <label>요청사항(선택)</label>
   <textarea th:field="*{message}"
@@ -45,17 +47,18 @@
 </form>
 
 <script>
-  const select = document.querySelector('select[name="optionId"]');
-  const qty    = document.querySelector('input[name="quantity"]');
-  const total  = document.getElementById('total');
+  const select       = document.querySelector('select[name="optionId"]');
+  const qty          = document.querySelector('input[name="quantity"]');
+  const total        = document.getElementById('total');
+  const productPrice = Number(select.dataset.productPrice);
 
   function recalc() {
-    const price = +select.selectedOptions[0].dataset.price;
-    const count = +qty.value;
-    total.textContent = (price * count).toLocaleString();
+    const count = Number(qty.value || 0);
+    total.textContent = (productPrice * count).toLocaleString();
   }
+
   select.addEventListener('change', recalc);
-  qty.addEventListener('input', recalc);
+  qty   .addEventListener('input' , recalc);
   recalc();
 </script>
 </body>

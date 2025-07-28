@@ -28,6 +28,9 @@ kakao.api-url=https://kapi.kakao.com
 #    - 카카오 로그인 후 authorization code 를 받을 콜백 URL
 #    - 반드시 Kakao Developers 콘솔에도 동일하게 등록되어 있어야 함
 kakao.redirect-uri=http://localhost:8080
+
+# 7. 메세지 템플릿 아이디
+kakao.template-id=122845
 ```
 
 Jwt Secret 키는 임의의 Base64 로 인코딩된 문자열을 `JWT_SECRET=` 값에 넣어주면 됩니다.
@@ -195,16 +198,16 @@ sequenceDiagram
 
 ### 🗒️ 기능 구현 체크리스트
 
-- [ ] 도메인 모델 설계 ( Order )
-- [ ] **주문 생성 API** `POST /api/orders`
-    - [ ] 옵션 & 재고 검증
-    - [ ] 재고 차감 `option.decreaseStock()`
-    - [ ] 주문 엔티티 저장
-    - [ ] 주문자 위시리스트 항목 삭제
-    - [ ] Kakao *나에게 보내기* 메시지 전송
-- [ ] **주문 상세 조회 API** `GET /api/orders/{id}`
-- [ ] **주문 내역 페이징 API** `GET /api/orders`
-- [ ] 예외 처리 (404 Not Found, 409 Conflict, 502 Bad Gateway 등)
-- [ ] 단위 테스트 (카카오 API Stub)
+- [x] 도메인 모델 설계 ( Order )
+- [x] **주문 생성 API** `POST /api/orders`
+    - [x] 옵션 & 재고 검증
+    - [x] 재고 차감 `option.decreaseStock()`
+    - [x] 주문 엔티티 저장
+    - [x] 주문자 위시리스트 항목 삭제
+    - [x] Kakao *나에게 보내기* 메시지 전송
+- [x] **주문 상세 조회 API** `GET /api/orders/{id}`
+- [x] **주문 내역 페이징 API** `GET /api/orders`
+- [x] 예외 처리 (404 Not Found, 409 Conflict, 502 Bad Gateway 등)
+- [x] 단위 테스트 (카카오 API Stub)
 
 ---

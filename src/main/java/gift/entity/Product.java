@@ -79,4 +79,8 @@ public class Product {
     public String getImageUrl() {
         return imageUrl;
     }
+
+    public List<Option> getOptions() {
+        return options;
+    }
 }

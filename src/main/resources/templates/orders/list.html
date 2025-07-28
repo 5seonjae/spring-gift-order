@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>내 주문 내역</title>
+  <style>
+    table { width:100%; border-collapse: collapse; }
+    th, td { padding:.5rem; border:1px solid #ddd; }
+    th { background:#f5f5f5; }
+    .pagination { list-style:none; display:flex; gap:.5rem; padding:0; }
+    .pagination li { }
+    .pagination li.active a { font-weight:bold; }
+    .pagination a { text-decoration:none; padding:.2rem .5rem; border:1px solid #ccc; }
+  </style>
+</head>
+<body>
+<h1>📦 내 주문 내역</h1>
+<p><a th:href="@{/products}">&larr; 메인으로</a></p>
+
+<table>
+  <thead>
+  <tr>
+    <th>주문번호</th><th>상품명</th><th>옵션명</th>
+    <th>수량</th><th>요청사항</th><th>주문일시</th><th>상세</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="o : ${orders.content}">
+    <td th:text="${o.id}">1</td>
+    <td th:text="${o.productName}">상품명</td>
+    <td th:text="${o.optionName}">옵션명</td>
+    <td th:text="${o.quantity}">수량</td>
+    <td th:text="${o.message}">요청사항</td>
+    <td th:text="${#temporals.format(o.orderDateTime, 'yyyy-MM-dd HH:mm')}">2025-07-28 14:35</td>
+  </tr>
+  <tr th:if="${#lists.isEmpty(orders.content)}">
+    <td colspan="7" style="text-align:center; padding:2rem;">
+      아직 주문 내역이 없습니다.
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<nav th:if="${orders.totalPages > 1}">
+  <ul class="pagination">
+    <li th:classappend="${orders.first} ? 'disabled'">
+      <a th:href="@{/orders(page=${orders.number-1}, size=${orders.size})}"
+         th:if="${!orders.first}">Prev</a>
+      <span th:if="${orders.first}">Prev</span>
+    </li>
+
+    <li th:each="i : ${#numbers.sequence(0, orders.totalPages - 1)}"
+        th:classappend="${i == orders.number} ? 'active'">
+      <a th:href="@{/orders(page=${i}, size=${orders.size})}"
+         th:text="${i + 1}">1</a>
+    </li>
+
+    <li th:classappend="${orders.last} ? 'disabled'">
+      <a th:href="@{/orders(page=${orders.number+1}, size=${orders.size})}"
+         th:if="${!orders.last}">Next</a>
+      <span th:if="${orders.last}">Next</span>
+    </li>
+  </ul>
+</nav>
+</body>
+</html>

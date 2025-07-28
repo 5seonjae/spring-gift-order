@@ -35,6 +35,9 @@ public class Member {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WishItem> wishItems = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<Order> orders = new ArrayList<>();
+
     public Member(Long id, String email, String password) {
         validate(email, password);
 

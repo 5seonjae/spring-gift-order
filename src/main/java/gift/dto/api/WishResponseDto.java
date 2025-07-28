@@ -1,13 +1,15 @@
 package gift.dto.api;
 
 import gift.entity.WishItem;
+import java.util.List;
 
 public record WishResponseDto(
     Long productId,
     String name,
     int price,
     String imageUrl,
-    int quantity
+    int quantity,
+    List<OptionResponseDto> options
 ) {
 
     public Long getProductId() {
@@ -30,13 +32,20 @@ public record WishResponseDto(
         return quantity;
     }
 
+    public List<OptionResponseDto> getOptions() {
+        return options;
+    }
+
     public static WishResponseDto of(WishItem wi) {
         return new WishResponseDto(
             wi.getProduct().getId(),
             wi.getProduct().getName(),
             wi.getProduct().getPrice(),
             wi.getProduct().getImageUrl(),
-            wi.getQuantity()
+            wi.getQuantity(),
+            wi.getProduct().getOptions().stream().map(
+                option -> new OptionResponseDto(option.getId(), option.getName(),
+                    option.getQuantity())).toList()
         );
     }
 }

@@ -22,17 +22,20 @@ public class OrderService {
     private final OptionRepository optionRepository;
     private final WishRepository wishRepository;
     private final OptionService optionService;
+    private final KakaoMessageService kakaoMessageService;
 
     public OrderService(
         OrderRepository orderRepository,
         OptionRepository optionRepository,
         WishRepository wishRepository,
-        OptionService optionService
+        OptionService optionService,
+        KakaoMessageService kakaoMessageService
     ) {
         this.orderRepository = orderRepository;
         this.optionRepository = optionRepository;
         this.wishRepository = wishRepository;
         this.optionService = optionService;
+        this.kakaoMessageService = kakaoMessageService;
     }
 
     @Transactional(readOnly = true)
@@ -58,6 +61,7 @@ public class OrderService {
             )
         );
         wishRepository.deleteByMemberIdAndProductId(member.getId(), option.getProduct().getId());
+        kakaoMessageService.sendOrderMemo(saved, member.getAccessToken());
         return saved;
     }
 

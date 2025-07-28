@@ -138,3 +138,73 @@ https://kauth.kakao.com/oauth/authorize
   &response_type=code
   &scope=profile_nickname
 ```
+
+## 📦 Step2 - 주문하기
+
+### 🧩 기능 명세
+
+1. 주문 작성
+
+    - `POST /api/orders`
+    - 요청 Body
+      ```json
+      {
+        "optionId": 17,
+        "quantity": 2,
+        "message": "맛있게 부탁해요!"
+      }
+      ```
+    - 동작
+        1. 옵션 & 재고 검증 → 차감
+        2. 주문 생성
+        3. ( 주문자 ) 위시리스트에서 옵션 제거
+        4. Kakao Message API 로 나에게 보내기 전송
+    - 응답 예시 `201 Created`
+      ```json
+      {
+        "id": 42,
+        "optionId": 17,
+        "quantity": 2,
+        "orderDateTime": "2025‑07‑25T14:00:00",
+        "message": "맛있게 부탁해요!"
+      }
+      ```
+
+2. 주문 상세 조회 `GET /api/orders/{id}`
+3. 주문 내역 페이징 `GET /api/orders?page=&size=`
+4. 기타 보조 API ( Product, Option, Wish ) 는 `/api/**` 네임스페이스 유지
+
+### 🔐 인증·인가 흐름
+
+```Plane Text
+sequenceDiagram
+    actor User
+    participant Front as Front‑end
+    participant Server as Spring Boot
+    participant Kakao as Kakao Server
+
+    User->>Front: Kakao Login 버튼 클릭
+    Front->>Kakao: /oauth/authorize?client_id&redirect_uri
+    Kakao-->>Front: code=abc123 (302)
+    Front->>Server: GET /login/oauth2/code/kakao?code=abc123
+    Server->>Kakao: /oauth/token (code 교환)
+    Kakao-->>Server: access_token
+    Server->>Server: 회원 조회/가입 → JWT 생성
+    Server-->>User: Set‑Cookie: JWT; HttpOnly
+```
+
+### 🗒️ 기능 구현 체크리스트
+
+- [ ] 도메인 모델 설계 ( Order )
+- [ ] **주문 생성 API** `POST /api/orders`
+    - [ ] 옵션 & 재고 검증
+    - [ ] 재고 차감 `option.decreaseStock()`
+    - [ ] 주문 엔티티 저장
+    - [ ] 주문자 위시리스트 항목 삭제
+    - [ ] Kakao *나에게 보내기* 메시지 전송
+- [ ] **주문 상세 조회 API** `GET /api/orders/{id}`
+- [ ] **주문 내역 페이징 API** `GET /api/orders`
+- [ ] 예외 처리 (404 Not Found, 409 Conflict, 502 Bad Gateway 등)
+- [ ] 단위 테스트 (카카오 API Stub)
+
+---

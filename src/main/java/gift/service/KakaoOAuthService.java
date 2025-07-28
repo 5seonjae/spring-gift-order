@@ -90,4 +90,17 @@ public class KakaoOAuthService {
             .timeout(Duration.ofSeconds(3))
             .block();
     }
+
+    public KakaoTokenResponseDto refreshTokenGrant(String refreshToken) {
+        return webClient.post()
+            .uri("/oauth/token")
+            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+            .body(BodyInserters.fromFormData("grant_type", "refresh_token")
+                .with("client_id", clientId)
+                .with("refresh_token", refreshToken)
+            )
+            .retrieve()
+            .bodyToMono(KakaoTokenResponseDto.class)
+            .block();
+    }
 }

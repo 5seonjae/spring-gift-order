@@ -1,7 +1,11 @@
 package gift.entity;
 
+import gift.dto.api.KakaoTokenResponseDto;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,6 +36,13 @@ public class Member {
 
     private String nickname;
 
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "accessToken", column = @Column(length = 2048)),
+        @AttributeOverride(name = "refreshToken", column = @Column(length = 2048))
+    })
+    private KakaoTokens kakaoTokens;
+
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WishItem> wishItems = new ArrayList<>();
 
@@ -58,6 +69,15 @@ public class Member {
         }
         this.kakaoId  = kakaoId;
         this.nickname = nickname;
+    }
+
+    public Member(Long kakaoId, String nickname, KakaoTokens kakaoTokens) {
+        if (kakaoId == null) {
+            throw new IllegalArgumentException("카카오 ID는 필수입니다.");
+        }
+        this.kakaoId  = kakaoId;
+        this.nickname = nickname;
+        this.kakaoTokens = kakaoTokens;
     }
 
     private void validate(String email, String password) {
@@ -100,5 +120,33 @@ public class Member {
 
     public String getNickname() {
         return nickname;
+    }
+
+    public boolean isKakaoUser() {
+        return kakaoTokens != null;
+    }
+
+    public String getAccessToken() {
+        return kakaoTokens.getAccessToken();
+    }
+
+    public String getRefreshToken() {
+        return kakaoTokens.getRefreshToken();
+    }
+
+    public boolean accessTokenExpired() {
+        return kakaoTokens.isAceessExpired();
+    }
+
+    public boolean refreshTokenExpired() {
+        return kakaoTokens.isRefreshExpired();
+    }
+
+    public void refreshTokens(KakaoTokenResponseDto dto) {
+        this.kakaoTokens = KakaoTokens.of(dto);
+    }
+
+    public void updateAccessToken(String newAccessToken, long expiresIn) {
+        this.kakaoTokens = kakaoTokens.withNewAccessToken(newAccessToken, expiresIn);
     }
 }

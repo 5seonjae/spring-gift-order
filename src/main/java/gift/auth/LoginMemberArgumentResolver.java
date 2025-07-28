@@ -11,6 +11,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.util.WebUtils;
@@ -54,5 +55,18 @@ public class LoginMemberArgumentResolver
 
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원입니다."));
+    }
+
+    public Member resolve(HttpServletRequest req) {
+        try {
+            return (Member) resolveArgument(
+                null,
+                null,
+                new ServletWebRequest(req),
+                null
+            );
+        } catch (Exception e) {
+            throw new IllegalStateException("LoginMemberArgumentResolver.resolve 호출 실패", e);
+        }
     }
 }

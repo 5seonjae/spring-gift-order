@@ -32,7 +32,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(kakaoTokenInterceptor)
-            .addPathPatterns("/api/**")
+            .addPathPatterns(
+                "/api/orders/**"
+            )
             .order(Ordered.HIGHEST_PRECEDENCE);
     }
 }

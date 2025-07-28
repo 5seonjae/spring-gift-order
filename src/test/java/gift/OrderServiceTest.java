@@ -193,15 +193,12 @@ public class OrderServiceTest {
     @Test
     @DisplayName("[성공] 주문 삭제 - 204 No Content")
     void deleteOrder_success() {
-        // given
         Long orderId = 1L;
         when(orderRepository.findById(orderId))
             .thenReturn(Optional.of(new Order(1, "부탁해요", member, option)));
 
-        // when
         orderService.deleteOrderForMember(member, orderId);
 
-        // then
         verify(orderRepository).deleteById(orderId);
     }
 

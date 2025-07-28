@@ -40,7 +40,7 @@ public class Option {
     private String name;
 
     @Column(nullable = false)
-    @Min(value = 1, message = "수량은 1개 이상이어야 합니다.")
+    @Min(value = 0, message = "수량은 0개 이상이어야 합니다.")
     @Max(value = 100_000_000, message = "수량은 1억 개 미만이어야 합니다.")
     private int quantity;
 

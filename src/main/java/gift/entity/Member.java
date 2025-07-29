@@ -143,7 +143,7 @@ public class Member {
     }
 
     public void refreshTokens(KakaoTokenResponseDto dto) {
-        this.kakaoTokens = KakaoTokens.of(dto);
+        this.kakaoTokens = KakaoTokens.from(dto);
     }
 
     public void updateAccessToken(String newAccessToken, long expiresIn) {

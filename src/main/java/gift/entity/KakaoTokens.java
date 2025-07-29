@@ -26,12 +26,12 @@ public class KakaoTokens {
         this.refreshExpiresAt = refreshExpiresAt;
     }
 
-    public static KakaoTokens of(KakaoTokenResponseDto kakaoTokenResponseDto) {
+    public static KakaoTokens from(KakaoTokenResponseDto kakaoTokenResponseDto) {
         return new KakaoTokens(
             kakaoTokenResponseDto.accessToken(),
             kakaoTokenResponseDto.refreshToken(),
             LocalDateTime.now().plusSeconds(kakaoTokenResponseDto.expiresIn()),
-            LocalDateTime.now().plusDays(30)
+            LocalDateTime.now().plusDays(kakaoTokenResponseDto.refreshTokenExpiresIn())
         );
     }
 

@@ -71,7 +71,7 @@ public class MemberService {
 
         Member member = memberRepository.findByKakaoId(kakaoId)
             .orElseGet(() ->
-                memberRepository.save(new Member(kakaoId, nickname, KakaoTokens.of(tokenDto)))
+                memberRepository.save(new Member(kakaoId, nickname, KakaoTokens.from(tokenDto)))
             );
 
         member.refreshTokens(tokenDto);

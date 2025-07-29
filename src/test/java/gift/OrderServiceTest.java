@@ -69,9 +69,10 @@ public class OrderServiceTest {
         "dummy-access-token",
         "dummy-refresh-token",
         3600,
+        2_592_000,
         "Bearer"
     );
-    private final Member member = new Member(1234L, "테스트유저", KakaoTokens.of(dummyDto));
+    private final Member member = new Member(1234L, "테스트유저", KakaoTokens.from(dummyDto));
     private final Product product = new Product(1L, "초콜릿", 1000, "http://chocolate.png");
     private final Option option = new Option(1L, product, "다크 초콜릿", 10);
 

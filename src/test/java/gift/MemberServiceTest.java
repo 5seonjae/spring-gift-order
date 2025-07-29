@@ -48,6 +48,7 @@ class MemberServiceTest {
                 "AT",
                 "RT",
                 3600,
+                2_592_000,
                 "Bearer"
             ));
 
@@ -81,6 +82,7 @@ class MemberServiceTest {
                 "AT2",
                 "RT2",
                 3600,
+                2_592_000,
                 "Bearer"
             ));
 

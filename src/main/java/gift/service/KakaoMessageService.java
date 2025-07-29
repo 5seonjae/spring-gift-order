@@ -47,7 +47,7 @@ public class KakaoMessageService {
             form.add("template_id", String.valueOf(templateId));
             form.add("template_args", buildTemplateArgs(order));
 
-            Map<?, ?> resp = kakaoClient.post()
+            Map<String, Object> resp = kakaoClient.post()
                 .uri("/v2/api/talk/memo/send")
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)

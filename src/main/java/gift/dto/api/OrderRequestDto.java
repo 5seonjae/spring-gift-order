@@ -22,6 +22,11 @@ public class OrderRequestDto {
         this.message = message;
     }
 
+    public OrderRequestDto() {
+        this.quantity = 1;
+        this.message = "";
+    }
+
     public Long getOptionId() {
         return optionId;
     }

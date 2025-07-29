@@ -49,7 +49,7 @@ public class OrderViewController {
     ) {
         Product product = productService.getProductById(productId);
         model.addAttribute("product", product);
-        model.addAttribute("orderReq", new OrderRequestDto(null, 1, ""));
+        model.addAttribute("orderReq", new OrderRequestDto());
         return "orders/form";
     }
 

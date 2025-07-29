@@ -81,6 +81,6 @@ public class Product {
     }
 
     public List<Option> getOptions() {
-        return options;
+        return new ArrayList<>(options);
     }
 }

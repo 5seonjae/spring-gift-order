@@ -62,10 +62,7 @@ public class Order {
     }
 
     public Order(int quantity, String message, Member member, Option option) {
-        this.quantity = quantity;
-        this.message = message;
-        this.member = member;
-        this.option = option;
+        this(quantity, message, LocalDateTime.now(), member, option);
     }
 
     public Long getId() {

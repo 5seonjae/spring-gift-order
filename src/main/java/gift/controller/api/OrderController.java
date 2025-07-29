@@ -48,7 +48,7 @@ public class OrderController {
         @RequestBody @Valid OrderRequestDto orderRequestDto
     ) {
         Order saved = orderService.addOrderForMember(member, orderRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(OrderResponseDto.of(saved));
+        return ResponseEntity.status(HttpStatus.CREATED).body(OrderResponseDto.from(saved));
     }
 
     @DeleteMapping("/{id}")

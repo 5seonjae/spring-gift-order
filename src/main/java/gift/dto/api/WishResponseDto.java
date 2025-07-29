@@ -36,7 +36,7 @@ public record WishResponseDto(
         return options;
     }
 
-    public static WishResponseDto of(WishItem wi) {
+    public static WishResponseDto from(WishItem wi) {
         return new WishResponseDto(
             wi.getProduct().getId(),
             wi.getProduct().getName(),

@@ -43,7 +43,7 @@ public class OrderService {
         validateMember(member);
         return orderRepository
             .findByMemberId(member.getId(), pageable)
-            .map(OrderViewResponseDto::of);
+            .map(OrderViewResponseDto::from);
     }
 
     @Transactional

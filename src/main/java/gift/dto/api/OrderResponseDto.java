@@ -31,7 +31,7 @@ public record OrderResponseDto (
         return message;
     }
 
-    public static OrderResponseDto of(Order order) {
+    public static OrderResponseDto from(Order order) {
         return new OrderResponseDto(
             order.getId(),
             order.getOption().getId(),

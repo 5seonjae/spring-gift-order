@@ -34,7 +34,7 @@ public class WishService {
         validateMember(member);
         return wishRepository
             .findAllByMemberId(member.getId(), pageable)
-            .map(WishResponseDto::of);
+            .map(WishResponseDto::from);
     }
 
     public void addWishItemForMember(Member member, WishRequestDto wishRequestDto) {

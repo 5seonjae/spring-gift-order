@@ -22,9 +22,8 @@ public class OrderRequestDto {
         this.message = message;
     }
 
-    public OrderRequestDto() {
-        this.quantity = 1;
-        this.message = "";
+    public static OrderRequestDto defaultOrderRequestDto(Long defaultOptionId) {
+        return new OrderRequestDto(defaultOptionId, 1, "");
     }
 
     public Long getOptionId() {

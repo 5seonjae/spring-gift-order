@@ -45,11 +45,25 @@ public class OrderViewController {
     @GetMapping("/orders/form")
     public String orderForm(
         @RequestParam Long productId,
-        Model model
+        Model model,
+        RedirectAttributes redirectAttributes
     ) {
         Product product = productService.getProductById(productId);
+        if (product.getOptions().isEmpty()) {
+            redirectAttributes.addFlashAttribute(
+                "errorMessage",
+                "상품에 옵션이 없어서 주문을 할 수 없습니다. 옵션이 추가되면 주문해주세요."
+            );
+            return "redirect:/products/" + productId;
+        }
+
+        Long defaultOptionId = product.getOptions().get(0).getId();
+
         model.addAttribute("product", product);
-        model.addAttribute("orderReq", new OrderRequestDto());
+        model.addAttribute(
+            "orderReq",
+            OrderRequestDto.defaultOrderRequestDto(defaultOptionId)
+        );
         return "orders/form";
     }
 

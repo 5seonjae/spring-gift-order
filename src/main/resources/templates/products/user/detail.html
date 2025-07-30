@@ -19,6 +19,13 @@
     </p>
   </div>
 
+  <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+  <a th:href="@{/orders/form(productId=${product.id})}"
+     class="btn">
+    주문하기
+  </a>
+
   <h3>옵션 선택</h3>
   <ul>
     <li th:each="opt : ${options}">

@@ -54,7 +54,7 @@ public class OptionController {
         URI location = URI.create(
             "/api/products/%d/options/%d".formatted(productId, saved.getId()));
         return ResponseEntity.created(location)
-            .body(OptionResponseDto.of(saved));
+            .body(OptionResponseDto.from(saved));
     }
 
     @PutMapping("/{optionId}")
@@ -65,7 +65,7 @@ public class OptionController {
     ) {
         Option updated = optionService.updateOption(productId, optionId, optionRequestDto);
 
-        return ResponseEntity.ok(OptionResponseDto.of(updated));
+        return ResponseEntity.ok(OptionResponseDto.from(updated));
     }
 
     @PatchMapping("/{optionId}/subtract")

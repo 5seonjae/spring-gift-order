@@ -3,6 +3,7 @@ package gift.service;
 import gift.dto.api.KakaoTokenResponseDto;
 import gift.dto.api.KakaoUserResponseDto;
 import gift.dto.api.MemberRegisterRequestDto;
+import gift.entity.KakaoTokens;
 import gift.entity.Member;
 import gift.exception.InvalidCredentialsException;
 import gift.repository.MemberRepository;
@@ -70,8 +71,10 @@ public class MemberService {
 
         Member member = memberRepository.findByKakaoId(kakaoId)
             .orElseGet(() ->
-                memberRepository.save(new Member(kakaoId, nickname))
+                memberRepository.save(new Member(kakaoId, nickname, KakaoTokens.from(tokenDto)))
             );
+
+        member.refreshTokens(tokenDto);
 
         return tokenService.generateToken(member.getId(), nickname);
     }

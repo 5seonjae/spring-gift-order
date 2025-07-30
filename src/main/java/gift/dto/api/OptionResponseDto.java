@@ -19,7 +19,7 @@ public record OptionResponseDto (
         return quantity;
     }
 
-    public static OptionResponseDto of(Option option) {
+    public static OptionResponseDto from(Option option) {
         return new OptionResponseDto(
             option.getId(),
             option.getName(),

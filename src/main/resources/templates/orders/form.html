@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>주문하기</title>
+  <style>
+  </style>
+</head>
+<body>
+<h1>상품명: <span th:text="${product.name}"></span></h1>
+<img th:src="${product.imageUrl}" alt="상품 이미지" width="250">
+<p>단가: <strong th:text="${#numbers.formatInteger(product.price,0)}"></strong>원</p>
+
+<form th:action="@{/orders}"
+      th:object="${orderReq}"
+      method="post">
+
+  <label>옵션 선택</label>
+  <select th:field="*{optionId}"
+          th:data-product-price="${product.price}"
+          required>
+    <option
+        th:each="opt : ${product.options}"
+        th:value="${opt.id}"
+        th:text="${opt.name + ' (' + opt.quantity + '개 재고)'}"
+        th:data-stock="${opt.quantity}">
+    </option>
+  </select>
+
+  <label>수량</label>
+  <input type="number"
+         th:field="*{quantity}"
+         min="1"
+         value="1" required/>
+
+  <p>총합: <span id="total">0</span>원</p>
+
+  <label>요청사항(선택)</label>
+  <textarea th:field="*{message}"
+            rows="3"
+            placeholder="요청사항을 입력하세요"></textarea>
+
+  <div>
+    <button type="submit">주문하기</button>
+    <a th:href="@{/products/{id}(id=${product.id})}">취소</a>
+  </div>
+</form>
+
+<script>
+  const select       = document.querySelector('select[name="optionId"]');
+  const qty          = document.querySelector('input[name="quantity"]');
+  const total        = document.getElementById('total');
+  const productPrice = Number(select.dataset.productPrice);
+
+  function recalc() {
+    const count = Number(qty.value || 0);
+    total.textContent = (productPrice * count).toLocaleString();
+  }
+
+  select.addEventListener('change', recalc);
+  qty   .addEventListener('input' , recalc);
+  recalc();
+</script>
+</body>
+</html>

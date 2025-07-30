@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>주문 완료</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 4rem auto;
+      text-align: center;
+    }
+    .message {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      color: #4a90e2;
+    }
+    .actions a {
+      display: inline-block;
+      margin: 0 .5rem;
+      padding: .5rem 1rem;
+      background: #4a90e2;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .actions a.cancel {
+      background: #aaa;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🎉 주문이 완료되었습니다! 🎉</h1>
+
+<p class="message" th:text="${msg}">주문이 성공적으로 접수되었습니다.</p>
+
+<div class="actions">
+  <a th:href="@{/orders}" >주문 내역 보기</a>
+  <a th:href="@{/}" class="cancel">메인으로</a>
+</div>
+
+</body>
+</html>

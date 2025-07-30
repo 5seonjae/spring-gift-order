@@ -1,6 +1,7 @@
 package gift.entity;
 
 import gift.exception.InsufficientStockException;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -16,6 +18,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -36,13 +40,16 @@ public class Option {
     private String name;
 
     @Column(nullable = false)
-    @Min(value = 1, message = "수량은 1개 이상이어야 합니다.")
+    @Min(value = 0, message = "수량은 0개 이상이어야 합니다.")
     @Max(value = 100_000_000, message = "수량은 1억 개 미만이어야 합니다.")
     private int quantity;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "product_id")
     private Product product;
+
+    @OneToMany(mappedBy = "option", cascade = CascadeType.ALL)
+    private List<Order> orders = new ArrayList<>();
 
     protected Option() {}
 

@@ -1,6 +1,8 @@
 package gift.auth;
 
 import gift.entity.Member;
+import gift.exception.InvalidAuthorizationHeaderException;
+import gift.exception.MissingAuthorizationHeaderException;
 import gift.repository.MemberRepository;
 import gift.service.TokenService;
 import gift.util.BearerAuthHeaderParser;
@@ -11,6 +13,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 import org.springframework.web.util.WebUtils;
@@ -41,17 +44,25 @@ public class LoginMemberArgumentResolver
     }
 
     @Override
-    public Object resolveArgument(MethodParameter parameter,
+    public Object resolveArgument(
+        MethodParameter parameter,
         ModelAndViewContainer mavContainer,
         NativeWebRequest webRequest,
-        WebDataBinderFactory binderFactory) {
-        HttpServletRequest r = webRequest.getNativeRequest(HttpServletRequest.class);
+        WebDataBinderFactory binderFactory
+    ) {
+        HttpServletRequest req = webRequest.getNativeRequest(HttpServletRequest.class);
+        return extractMember(req);
+    }
 
-        String header = tokenExtractor.extractBearerHeader(r);
-        String token = authHeaderParser.extractBearerToken(header);
-        Claims claims = tokenService.parseClaims(token);
+    public Member resolve(HttpServletRequest req) {
+        return extractMember(req);
+    }
+
+    private Member extractMember(HttpServletRequest req) {
+        String header = tokenExtractor.extractBearerHeader(req);
+        String token  = authHeaderParser .extractBearerToken(header);
+        Claims claims  = tokenService      .parseClaims(token);
         Long memberId = Long.valueOf(claims.getSubject());
-
         return memberRepository.findById(memberId)
             .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원입니다."));
     }

@@ -15,12 +15,12 @@ public class OptionRequestDto {
         regexp = "^[a-zA-Z0-9가-힣()\\[\\]+\\-&/_ ]*$",
         message = "유효한 특수문자 ( '( )', '[ ]', '+', '-', '&', '/', '_' ) 가 아닙니다."
     )
-    String name;
+    private String name;
 
     @NotNull(message = "수량은 필수입니다.")
     @Min(value = 1, message = "수량은 1개 이상이어야 합니다.")
     @Max(value = 100_000_000, message = "수량은 1억 개 미만이어야 합니다.")
-    Integer quantity;
+    private Integer quantity;
 
     public OptionRequestDto(String name, Integer quantity) {
         this.name = name;

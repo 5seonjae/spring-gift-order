@@ -177,4 +177,18 @@ public class GlobalExceptionHandler {
         }
         return HttpStatus.INTERNAL_SERVER_ERROR;
     }
+
+    @ExceptionHandler(ReauthorizeRequiredException.class)
+    public ResponseEntity<Map<String, String>> handleReauthorizeRequired(ReauthorizeRequiredException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(ExternalServiceException.class)
+    public ResponseEntity<Map<String, String>> handleExternalService(ExternalServiceException e) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", e.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.BAD_GATEWAY);
+    }
 }

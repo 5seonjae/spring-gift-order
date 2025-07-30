@@ -30,7 +30,7 @@ public class OptionService {
     public Page<OptionResponseDto> getOptionList(Long productId, Pageable pageable) {
         return optionRepository
             .findAllByProductId(productId, pageable)
-            .map(OptionResponseDto::of);
+            .map(OptionResponseDto::from);
     }
 
     public Option addOption(Long productId, OptionRequestDto optionRequestDto) {

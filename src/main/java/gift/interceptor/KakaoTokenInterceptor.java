@@ -1,8 +1,14 @@
 package gift.interceptor;
 
-import gift.auth.LoginMemberArgumentResolver;
+import gift.auth.LoginMember;
+import gift.auth.TokenExtractor;
 import gift.entity.Member;
+import gift.repository.MemberRepository;
 import gift.service.KakaoTokenManager;
+import gift.service.MemberExtractor;
+import gift.service.TokenService;
+import gift.util.BearerAuthHeaderParser;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Arrays;
@@ -14,14 +20,14 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class KakaoTokenInterceptor implements HandlerInterceptor {
 
     private final KakaoTokenManager tokenManager;
-    private final LoginMemberArgumentResolver resolver;
+    private final MemberExtractor memberExtractor;
 
     public KakaoTokenInterceptor(
         KakaoTokenManager tokenManager,
-        LoginMemberArgumentResolver resolver
+        MemberExtractor memberExtractor
     ) {
         this.tokenManager = tokenManager;
-        this.resolver = resolver;
+        this.memberExtractor = memberExtractor;
     }
 
     @Override
@@ -30,17 +36,13 @@ public class KakaoTokenInterceptor implements HandlerInterceptor {
         HttpServletResponse res,
         Object handler
     ) {
-        if (!(handler instanceof HandlerMethod hm)) {
+        if (!(handler instanceof HandlerMethod hm) ||
+            Arrays.stream(hm.getMethodParameters())
+                .noneMatch(p -> p.hasParameterAnnotation(LoginMember.class))) {
             return true;
         }
 
-        boolean requiresAuth = Arrays.stream(hm.getMethodParameters())
-            .anyMatch(resolver::supportsParameter);
-        if (!requiresAuth) {
-            return true;
-        }
-
-        Member member = resolver.resolve(req);
+        Member member = memberExtractor.extractMember(req);
         if (member.isKakaoUser()) {
             tokenManager.ensureAccessToken(member.getId());
         }

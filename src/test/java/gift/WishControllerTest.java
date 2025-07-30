@@ -8,16 +8,19 @@ import gift.entity.Member;
 import gift.entity.Product;
 import gift.exception.InvalidAuthorizationHeaderException;
 import gift.exception.MissingAuthorizationHeaderException;
+import gift.interceptor.KakaoTokenInterceptor;
 import gift.repository.MemberRepository;
 import gift.repository.ProductRepository;
 import gift.service.WishService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -54,6 +57,9 @@ public class WishControllerTest {
     @MockitoBean
     private LoginMemberArgumentResolver loginMemberArgumentResolver;
 
+    @MockitoBean
+    private KakaoTokenInterceptor kakaoTokenInterceptor;
+
     Member member;
 
     @BeforeEach
@@ -81,19 +87,11 @@ public class WishControllerTest {
                 return member;
             });
 
-        given(loginMemberArgumentResolver.resolve(any(HttpServletRequest.class)))
-            .willAnswer(invocation -> {
-                HttpServletRequest req = invocation.getArgument(0);
-                String header = req.getHeader("Authorization");
-                if (header == null) {
-                    throw new MissingAuthorizationHeaderException("Authorization 헤더가 필요합니다.");
-                }
-                if (!header.startsWith("Bearer ")) {
-                    throw new InvalidAuthorizationHeaderException(
-                        "Authorization 헤더 형식이 올바르지 않습니다.");
-                }
-                return member;
-            });
+        given(kakaoTokenInterceptor.preHandle(
+            any(HttpServletRequest.class),
+            any(HttpServletResponse.class),
+            any(Object.class)
+        )).willReturn(true);
     }
 
     @Test
@@ -105,7 +103,7 @@ public class WishControllerTest {
         wishService.addWishItemForMember(member, sampleWishRequestDto);
 
         mockMvc.perform(get("/api/wishes")
-                        .header("Authorization", "Bearer dummy-token")  // resolver가 mock이면 토큰 내용 무관
+                        .header("Authorization", "Bearer dummy-token")
                         .param("page", "0")
                         .param("size", "5")
                         .param("sort", "id,desc")

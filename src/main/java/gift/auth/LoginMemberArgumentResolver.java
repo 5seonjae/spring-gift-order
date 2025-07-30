@@ -1,40 +1,29 @@
 package gift.auth;
 
 import gift.entity.Member;
-import gift.exception.InvalidAuthorizationHeaderException;
-import gift.exception.MissingAuthorizationHeaderException;
 import gift.repository.MemberRepository;
+import gift.service.MemberExtractor;
 import gift.service.TokenService;
 import gift.util.BearerAuthHeaderParser;
 import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
-import org.springframework.web.util.WebUtils;
 
 @Component
 public class LoginMemberArgumentResolver
     implements HandlerMethodArgumentResolver {
 
-    private final TokenService tokenService;
-    private final MemberRepository memberRepository;
-    private final BearerAuthHeaderParser authHeaderParser;
-    private final TokenExtractor tokenExtractor;
+    private final MemberExtractor memberExtractor;
 
-    public LoginMemberArgumentResolver(TokenService tokenService,
-                                       MemberRepository memberRepository,
-                                       BearerAuthHeaderParser authHeaderParser,
-        TokenExtractor tokenExtractor) {
-        this.tokenService = tokenService;
-        this.memberRepository = memberRepository;
-        this.authHeaderParser = authHeaderParser;
-        this.tokenExtractor = tokenExtractor;
+    public LoginMemberArgumentResolver(
+        MemberExtractor memberExtractor
+    ) {
+        this.memberExtractor = memberExtractor;
     }
 
     @Override
@@ -51,19 +40,6 @@ public class LoginMemberArgumentResolver
         WebDataBinderFactory binderFactory
     ) {
         HttpServletRequest req = webRequest.getNativeRequest(HttpServletRequest.class);
-        return extractMember(req);
-    }
-
-    public Member resolve(HttpServletRequest req) {
-        return extractMember(req);
-    }
-
-    private Member extractMember(HttpServletRequest req) {
-        String header = tokenExtractor.extractBearerHeader(req);
-        String token  = authHeaderParser .extractBearerToken(header);
-        Claims claims  = tokenService      .parseClaims(token);
-        Long memberId = Long.valueOf(claims.getSubject());
-        return memberRepository.findById(memberId)
-            .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원입니다."));
+        return memberExtractor.extractMember(req);
     }
 }

@@ -25,6 +25,7 @@ public class KakaoMessageService {
     private final WebClient kakaoClient;
     private final ObjectMapper objectMapper;
     private final Long templateId;
+    private static final int KAKAO_SUCCESS_CODE = 0;
 
     public KakaoMessageService(
         @Value("${kakao.api-url}") String apiUrl,
@@ -52,7 +53,8 @@ public class KakaoMessageService {
                 .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .block();
 
-            if (!Objects.equals(resp.get("result_code"), 0)) {
+            Integer resultCode = (Integer) resp.get("result_code");
+            if (!Objects.equals(resultCode, KAKAO_SUCCESS_CODE)) {
                 throw new ExternalServiceException("카카오톡 전송 실패: " + resp);
             }
         } catch (JsonProcessingException e) {

@@ -6,6 +6,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      JWT_EXPIRATION_MS: ${{ secrets.JWT_EXPIRATION_MS }}
+      KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+      KAKAO_AUTH_URL: ${{ secrets.KAKAO_AUTH_URL }}
+      KAKAO_API_URL: ${{ secrets.KAKAO_API_URL }}
+      KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+      KAKAO_TEMPLATE_ID: ${{ secrets.KAKAO_TEMPLATE_ID }}
     steps:
       - uses: actions/checkout@v4
 

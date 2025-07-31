@@ -40,18 +40,31 @@ jobs:
       cancel-in-progress: true
 
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
         with:
           name: app-jar
 
-      - name: Copy to EC2
+      - name: Copy deploy script to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "*.jar"
-          target: "/home/ubuntu/build/"
+          source: scripts/deploy.sh
+          target: /home/${{ secrets.EC2_USER }}/scripts/
+
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: build/libs/*.jar
+          target: /home/${{ secrets.EC2_USER }}/build/
 
       - name: Restart remote service
         uses: appleboy/ssh-action@v1.0.3

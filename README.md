@@ -219,10 +219,10 @@ sequenceDiagram
 ### 기능 목록
 
 - CI/CD
-  - [ ] GitHub Actions 워크플로(`deploy.yml`) 작성
-  - [ ] JAR → EC2 업로드(`scp-action`) + 원격 재시작(`deploy.sh`)
+  - [x] GitHub Actions 워크플로(`deploy.yml`) 작성
+  - [x] JAR → EC2 업로드(`scp-action`) + 원격 재시작(`deploy.sh`)
 - 보안 
-  - [ ] 글로벌 CORS 설정 (`/api/**`)
+  - [x] 글로벌 CORS 설정 (`/api/**`)
   - [ ] HTTPS(TLS) 적용 – Nginx + Let’s Encrypt
 
 ### 시스템 개요

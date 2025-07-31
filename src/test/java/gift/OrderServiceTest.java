@@ -107,7 +107,6 @@ public class OrderServiceTest {
 
     @ParameterizedTest(name = "[page={0}] quantity={1}, message={2}")
     @CsvSource({
-        // page, quantity, message, isFirst, hasPrevious, hasNext
         "0, 3, C, true,  false, true",
         "1, 2, B, false, true,  true",
         "2, 1, A, false, true,  false"

@@ -49,7 +49,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: mkdir -p /home/${{ secrets.EC2_USER }}/scripts /home/${{ secrets.EC2_USER }}/build
+          script: mkdir -p /home/${{ secrets.EC2_USER }}/scripts /home/${{ secrets.EC2_USER }}/build /home/${{ secrets.EC2_USER }}/app
 
       - name: Download artifact
         uses: actions/download-artifact@v4

@@ -18,18 +18,10 @@ import reactor.netty.http.client.HttpClient;
 @Service
 public class KakaoOAuthService {
 
-    @Value("${kakao.client-id}")
     private final String clientId;
-
-    @Value("${kakao.auth-url}")
     private final String authUrl;
-
-    @Value("${kakao.api-url}")
     private final String apiUrl;
-
-    @Value("${kakao.redirect-uri}")
     private final String redirectUri;
-
     private final WebClient webClient;
 
     public KakaoOAuthService(

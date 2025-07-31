@@ -22,24 +22,20 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Service
 public class KakaoMessageService {
 
-    @Value("${kakao.api-url}")
-    private final String apiUrl;
-
     private final WebClient kakaoClient;
     private final ObjectMapper objectMapper;
+    private final Long templateId;
 
     public KakaoMessageService(
         @Value("${kakao.api-url}") String apiUrl,
+        @Value("${kakao.template-id}") Long templateId,
         WebClient.Builder builder,
         ObjectMapper objectMapper
     ) {
-        this.apiUrl = apiUrl;
         this.kakaoClient = builder.baseUrl(apiUrl).build();
         this.objectMapper = objectMapper;
+        this.templateId = templateId;
     }
-
-    @Value("${kakao.template-id}")
-    private Long templateId;
 
     public void sendOrderMemo(Order order, String accessToken) {
         try {

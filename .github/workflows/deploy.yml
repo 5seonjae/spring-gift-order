@@ -43,6 +43,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Prepare remote dirs
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: mkdir -p /home/${{ secrets.EC2_USER }}/scripts /home/${{ secrets.EC2_USER }}/build
+
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:

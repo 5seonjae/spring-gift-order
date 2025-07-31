@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-BUILD_PATH=$(ls /home/ubuntu/build/*.jar | grep -v 'plain | head -n 1)
+BUILD_PATH=$(ls /home/ubuntu/build/*.jar | grep -v 'plain` | head -n 1)
 JAR_NAME=$(basename "$BUILD_PATH")
 APP_DIR=/home/ubuntu/app
 

@@ -80,18 +80,24 @@ jobs:
       - name: Restart remote service
         uses: appleboy/ssh-action@v1.0.3
         env:
-          jwt.secret: ${{ secrets.JWT_SECRET }}
-          jwt.expiration-ms: ${{ secrets.JWT_EXPIRATION_MS }}
-          kakao.client-id: ${{ secrets.KAKAO_CLIENT_ID }}
-          kakao.auth-url: ${{ secrets.KAKAO_AUTH_URL }}
-          kakao.api-url: ${{ secrets.KAKAO_API_URL }}
-          kakao.redirect-uri: ${{ secrets.KAKAO_REDIRECT_URI }}
-          kakao.template-id: ${{ secrets.KAKAO_TEMPLATE_ID }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRATION_MS: ${{ secrets.JWT_EXPIRATION_MS }}
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_AUTH_URL: ${{ secrets.KAKAO_AUTH_URL }}
+          KAKAO_API_URL: ${{ secrets.KAKAO_API_URL }}
+          KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+          KAKAO_TEMPLATE_ID: ${{ secrets.KAKAO_TEMPLATE_ID }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          envs: jwt.secret,jwt.expiration-ms,kakao.client-id,kakao.auth-url,kakao.api-url,kakao.redirect-uri,kakao.template-id
           script: |
+            export JWT_SECRET="${JWT_SECRET}"
+            export JWT_EXPIRATION_MS="${JWT_EXPIRATION_MS}"
+            export KAKAO_CLIENT_ID="${KAKAO_CLIENT_ID}"
+            export KAKAO_AUTH_URL="${KAKAO_AUTH_URL}"
+            export KAKAO_API_URL="${KAKAO_API_URL}"
+            export KAKAO_REDIRECT_URI="${KAKAO_REDIRECT_URI}"
+            export KAKAO_TEMPLATE_ID="${KAKAO_TEMPLATE_ID}"
             chmod +x ~/scripts/deploy.sh
             ~/scripts/deploy.sh

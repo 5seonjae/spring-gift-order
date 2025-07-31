@@ -2,6 +2,7 @@ package gift.entity;
 
 import gift.dto.api.KakaoTokenResponseDto;
 import jakarta.persistence.Embeddable;
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Embeddable

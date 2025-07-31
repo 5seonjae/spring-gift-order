@@ -91,13 +91,15 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          envs: |
+            JWT_SECRET,
+            JWT_EXPIRATION_MS,
+            KAKAO_CLIENT_ID,
+            KAKAO_AUTH_URL,
+            KAKAO_API_URL,
+            KAKAO_REDIRECT_URI,
+            KAKAO_TEMPLATE_ID
           script: |
-            export JWT_SECRET="${JWT_SECRET}"
-            export JWT_EXPIRATION_MS="${JWT_EXPIRATION_MS}"
-            export KAKAO_CLIENT_ID="${KAKAO_CLIENT_ID}"
-            export KAKAO_AUTH_URL="${KAKAO_AUTH_URL}"
-            export KAKAO_API_URL="${KAKAO_API_URL}"
-            export KAKAO_REDIRECT_URI="${KAKAO_REDIRECT_URI}"
-            export KAKAO_TEMPLATE_ID="${KAKAO_TEMPLATE_ID}"
+            echo "→ SSH 셸에서 JWT_SECRET = '$JWT_SECRET'"
             chmod +x ~/scripts/deploy.sh
             ~/scripts/deploy.sh

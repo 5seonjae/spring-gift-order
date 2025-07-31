@@ -103,7 +103,6 @@ public class AuthViewController {
         String jwt = memberService.loginWithKakao(code);
         ResponseCookie cookie = ResponseCookie.from("AUTH", jwt)
             .httpOnly(true)
-            .secure(true)
             .path("/")
             .maxAge(Duration.ofHours(1))
             .sameSite("Lax")

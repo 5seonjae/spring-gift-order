@@ -195,12 +195,13 @@ public class OrderServiceTest {
     @DisplayName("[성공] 주문 삭제 - 204 No Content")
     void deleteOrder_success() {
         Long orderId = 1L;
+        Order order = new Order(1, "부탁해요", member, option);
         when(orderRepository.findById(orderId))
-            .thenReturn(Optional.of(new Order(1, "부탁해요", member, option)));
+            .thenReturn(Optional.of(order));
 
         orderService.deleteOrderForMember(member, orderId);
 
-        verify(orderRepository).deleteById(orderId);
+        verify(orderRepository).delete(order);
     }
 
     @Test

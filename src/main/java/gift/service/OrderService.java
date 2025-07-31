@@ -67,9 +67,9 @@ public class OrderService {
 
     public void deleteOrderForMember(Member member, Long id) {
         validateMember(member);
-        orderRepository.findById(id)
+        Order order = orderRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("주문을 찾을 수 없습니다."));
-        orderRepository.deleteById(id);
+        orderRepository.delete(order);
     }
 
     private void validateMember(Member member) {

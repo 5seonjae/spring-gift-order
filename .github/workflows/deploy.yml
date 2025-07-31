@@ -55,7 +55,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-jar
-          path: build/
 
       - name: Copy deploy script to EC2
         uses: appleboy/scp-action@v0.1.7

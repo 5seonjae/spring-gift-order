@@ -10,9 +10,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -25,12 +22,9 @@ public class Order {
     private Long id;
 
     @Column(nullable = false)
-    @Min(value = 1, message = "수량은 1개 이상이어야 합니다.")
-    @Max(value = 100_000_000, message = "수량은 1억 개 미만이어야 합니다.")
     private int quantity;
 
     @Column(nullable = false)
-    @Size(max = 200, message = "요청 메시지는 200자 이하만 가능합니다.")
     private String message;
 
     @Column(nullable = false, updatable = false)
@@ -54,6 +48,8 @@ public class Order {
         Member member,
         Option option
     ) {
+        validate(quantity, message, member, option);
+
         this.quantity = quantity;
         this.message = message;
         this.orderDateTime = orderDateTime;
@@ -63,6 +59,29 @@ public class Order {
 
     public Order(int quantity, String message, Member member, Option option) {
         this(quantity, message, LocalDateTime.now(), member, option);
+    }
+
+    private void validate(
+        int quantity,
+        String message,
+        Member member,
+        Option option
+    ) {
+        if (member == null) {
+            throw new IllegalArgumentException("회원 정보는 필수입니다.");
+        }
+        if (option == null) {
+            throw new IllegalArgumentException("옵션 정보는 필수입니다.");
+        }
+        if (quantity < 1) {
+            throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
+        }
+        if (quantity > 100_000_000) {
+            throw new IllegalArgumentException("수량은 1억 개 미만이어야 합니다.");
+        }
+        if (message.length() > 200) {
+            throw new IllegalArgumentException("요청 메시지는 200자 이하만 가능합니다.");
+        }
     }
 
     public Long getId() {

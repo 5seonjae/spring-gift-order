@@ -65,6 +65,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: scripts/deploy.sh
           target: /home/${{ secrets.EC2_USER }}/scripts/
+          strip_components: 1
 
       - name: Copy JAR to EC2
         uses: appleboy/scp-action@v0.1.7
@@ -74,6 +75,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           source: build/libs/*.jar
           target: /home/${{ secrets.EC2_USER }}/build/
+          strip_components: 2
 
       - name: Restart remote service
         uses: appleboy/ssh-action@v1.0.3

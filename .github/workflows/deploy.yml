@@ -84,5 +84,12 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            export JWT_SECRET='${{ secrets.JWT_SECRET }}'
+            export JWT_EXPIRATION_MS='${{ secrets.JWT_EXPIRATION_MS }}'
+            export KAKAO_CLIENT_ID='${{ secrets.KAKAO_CLIENT_ID }}'
+            export KAKAO_API_URL='${{ secrets.KAKAO_API_URL }}'
+            export KAKAO_AUTH_URL='${{ secrets.KAKAO_AUTH_URL }}'
+            export KAKAO_REDIRECT_URI='${{ secrets.KAKAO_REDIRECT_URI }}'
+            export KAKAO_TEMPLATE_ID='${{ secrets.KAKAO_TEMPLATE_ID }}'
             chmod +x ~/scripts/deploy.sh
             ~/scripts/deploy.sh

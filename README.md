@@ -211,3 +211,175 @@ sequenceDiagram
 - [x] 단위 테스트 (카카오 API Stub)
 
 ---
+
+## 🚀 Step 3 배포하기
+
+지금까지 만든 선물하기 서비스를 **GitHub Actions → EC2** 파이프라인으로 자동 배포하고 클라이언트가 `https://gift.example.com`에서 안전하게 API를 호출하도록 구성합니다.
+
+### 기능 목록
+
+- CI/CD
+  - [ ] GitHub Actions 워크플로(`deploy.yml`) 작성
+  - [ ] JAR → EC2 업로드(`scp-action`) + 원격 재시작(`deploy.sh`)
+- 보안 
+  - [ ] 글로벌 CORS 설정 (`/api/**`)
+  - [ ] HTTPS(TLS) 적용 – Nginx + Let’s Encrypt
+
+### 시스템 개요
+
+```Plain text
+┌────────────────────────┐   ┌────────────────────┐
+│ GitHub Repo │ ─ push    ─▶ │   GitHub Actions   │
+└────────────────────────┘   ├────────────────────┤
+                             │   build → deploy   │
+                             └─────────────────┬──┘
+                                     ssh + scp │ 
+┌────────────────────────┐           ┌─────────▼───────────┐
+│       EC2 (Ubuntu)     │           │    deploy.sh runs   │
+│ Nginx (TLS termination)│◀──https──▶│   Spring Boot JAR   │
+└────────────────────────┘           └─────────────────────┘
+```
+
+## 요구 사항 & 사전 준비
+
+| 항목 | 설명                                              |
+|------|-------------------------------------------------|
+|EC2| Ubuntu 22.04, OpenJDK 21, 포트 `8080` 오픈          |
+|도메인| `gift.example.com` A-레코드 → EC2 IP               |
+|GitHub Secrets| `EC2_HOST`, `EC2_SSH_KEY`, `EC2_USER` (=ubuntu) |
+|AWS(OIDC)| `ROLE_TO_ASSUME` (선택) – Secrets 없이 배포하려면 사용     | 
+|빌드 툴| Gradle Wrapper 포함 (`./gradlew`)                 |
+
+## 디렉토리/파일
+
+```Plane text
+├── .github/workflows/deploy.yml # CI/CD 파이프라인
+├── scripts/
+│ └── deploy.sh # 서버 재시작 스크립트
+└── src/ ... # 기존 백엔드 코드
+```
+
+## 5. GitHub Actions 워크플로 예시 (`deploy.yml`)
+
+> 주요 Action
+> * 파일 업로드 : **appleboy/scp-action** 
+> * 원격 명령 : **appleboy/ssh-action** (동일 리포)
+> * AWS OIDC  : **aws-actions/configure-aws-credentials**
+
+```yaml
+name: Deploy Gift Service
+on:
+  push:
+    branches: [main, develop]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*') }}
+
+      - name: Build JAR
+        run: ./gradlew clean build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: build/libs/*.jar
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    concurrency:
+      group: "deploy-${{ github.ref }}"
+      cancel-in-progress: true           # 동일 브랜치 중복 배포 차단
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+
+      - name: Copy to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "*.jar"
+          target: "/home/ubuntu/build/"
+
+      - name: Restart remote service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            chmod +x ~/scripts/deploy.sh
+            ~/scripts/deploy.sh
+```
+
+### 서버 재시작 스크립트 예시 (`scripts/deploy.sh`)
+
+```bash
+#!/bin/bash
+set -e
+
+BUILD_PATH=$(ls /home/ubuntu/build/*.jar | head -n 1)
+JAR_NAME=$(basename "$BUILD_PATH")
+APP_DIR=/home/ubuntu/app
+
+echo "▶ current JAR  : $JAR_NAME"
+PID=$(pgrep -f "$JAR_NAME" || true)
+
+if [ -n "$PID" ]; then
+echo "▶ stop running app (pid=$PID)"
+kill -15 "$PID"
+sleep 5
+fi
+
+echo "▶ deploy new JAR"
+cp "$BUILD_PATH" "$APP_DIR/"
+cd "$APP_DIR"
+
+nohup java -jar "$JAR_NAME" --spring.profiles.active=prod \
+> /dev/null 2>&1 &
+echo "▶ started! (bg)"
+```
+
+### 글로벌 CORS 설정
+
+```java
+@Configuration
+public class CorsConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")
+                .allowedOrigins("https://gift.example.com")
+                .allowedMethods("GET","POST","PUT","DELETE")
+                .allowCredentials(true)
+                .maxAge(1800);
+    }
+}
+```
+
+### HTTPS (Let’s Encrypt + Nginx) — 선택
+
+```bash
+# ① Nginx 설치
+sudo apt-get update && sudo apt-get install nginx
+
+# ② certbot
+sudo snap install core; sudo snap refresh core
+sudo snap install --classic certbot
+sudo certbot --nginx -d gift.example.com
+```
+
+---

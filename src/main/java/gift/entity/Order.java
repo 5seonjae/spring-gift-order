@@ -17,6 +17,10 @@ import org.hibernate.annotations.CreationTimestamp;
 @Table(name = "orders")
 public class Order {
 
+    private static final int MESSAGE_MAX_LENGTH = 200;
+    private static final int MIN_QUANTITY = 1;
+    private static final int MAX_QUANTITY = 100_000_000;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -73,13 +77,13 @@ public class Order {
         if (option == null) {
             throw new IllegalArgumentException("옵션 정보는 필수입니다.");
         }
-        if (quantity < 1) {
+        if (quantity < MIN_QUANTITY) {
             throw new IllegalArgumentException("수량은 1개 이상이어야 합니다.");
         }
-        if (quantity > 100_000_000) {
+        if (quantity > MAX_QUANTITY) {
             throw new IllegalArgumentException("수량은 1억 개 미만이어야 합니다.");
         }
-        if (message.length() > 200) {
+        if (message.length() > MESSAGE_MAX_LENGTH) {
             throw new IllegalArgumentException("요청 메시지는 200자 이하만 가능합니다.");
         }
     }

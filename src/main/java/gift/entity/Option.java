@@ -21,6 +21,12 @@ import java.util.regex.Pattern;
 @Table(name = "options")
 public class Option {
 
+    private static final Pattern NAME_PATTERN =
+        Pattern.compile("^[a-zA-Z0-9가-힣()\\[\\]+\\-&/_ ]*$");
+    private static final int NAME_MAX_LENGTH = 50;
+    private static final int MIN_QUANTITY = 0;
+    private static final int MAX_QUANTITY = 100_000_000;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -53,9 +59,6 @@ public class Option {
         this(null, product, name, quantity);
     }
 
-    private static final Pattern NAME_PATTERN =
-        Pattern.compile("^[a-zA-Z0-9가-힣()\\[\\]+\\-&/_ ]*$");
-
     private void validate(Product product, String name, int quantity) {
         if (product == null) {
             throw new IllegalArgumentException("상품은 필수입니다.");
@@ -63,7 +66,7 @@ public class Option {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("옵션 이름은 필수입니다.");
         }
-        if (name.length() > 50) {
+        if (name.length() > NAME_MAX_LENGTH) {
             throw new IllegalArgumentException("최대 50자까지 가능합니다.");
         }
         if (!NAME_PATTERN.matcher(name).matches()) {
@@ -71,10 +74,10 @@ public class Option {
                 "유효한 특수문자 ( '( )', '[ ]', '+', '-', '&', '/', '_' ) 가 아닙니다."
             );
         }
-        if (quantity < 0) {
+        if (quantity < MIN_QUANTITY) {
             throw new IllegalArgumentException("수량은 0개 이상이어야 합니다.");
         }
-        if (quantity > 100_000_000) {
+        if (quantity > MAX_QUANTITY) {
             throw new IllegalArgumentException("수량은 1억 개 미만이어야 합니다.");
         }
     }
@@ -96,7 +99,7 @@ public class Option {
     }
 
     public void subtract(int quantity) {
-        if (quantity <= 0) {
+        if (quantity <= MIN_QUANTITY) {
             throw new IllegalArgumentException("차감 수량은 1 이상이어야 합니다.");
         }
         if (quantity > this.quantity) {

@@ -14,10 +14,15 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "members")
 public class Member {
+
+    private static final Pattern EMAIL_PATTERN =
+        Pattern.compile(".+@.+\\..+");
+    private static final int PASSWORD_MIN_LENGTH = 6;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,7 +90,7 @@ public class Member {
             throw new IllegalArgumentException("이메일은 필수입니다.");
         }
 
-        if (!email.matches(".+@.+\\..+")) {
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
             throw new IllegalArgumentException("유효한 이메일 형식이 아닙니다.");
         }
 
@@ -93,7 +98,7 @@ public class Member {
             throw new IllegalArgumentException("비밀번호는 필수입니다.");
         }
 
-        if (password.length() < 6) {
+        if (password.length() < PASSWORD_MIN_LENGTH) {
             throw new IllegalArgumentException("비밀번호는 최소 6자 이상이어야 합니다.");
         }
     }

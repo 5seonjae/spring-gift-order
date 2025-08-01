@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "options")
@@ -52,6 +53,9 @@ public class Option {
         this(null, product, name, quantity);
     }
 
+    private static final Pattern NAME_PATTERN =
+        Pattern.compile("^[a-zA-Z0-9가-힣()\\[\\]+\\-&/_ ]*$");
+
     private void validate(Product product, String name, int quantity) {
         if (product == null) {
             throw new IllegalArgumentException("상품은 필수입니다.");
@@ -62,7 +66,7 @@ public class Option {
         if (name.length() > 50) {
             throw new IllegalArgumentException("최대 50자까지 가능합니다.");
         }
-        if (!name.matches("^[a-zA-Z0-9가-힣()\\[\\]+\\-&/_ ]*$")) {
+        if (!NAME_PATTERN.matcher(name).matches()) {
             throw new IllegalArgumentException(
                 "유효한 특수문자 ( '( )', '[ ]', '+', '-', '&', '/', '_' ) 가 아닙니다."
             );

@@ -6,6 +6,7 @@ phases:
   post_build:
     commands:
       - aws s3 sync ./frontend "s3://$S3_BUCKET" --delete --exclude ".git/*" --exclude "buildspec.yml"
+      - aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "/*"
 artifacts:
   files:
     - "**/*"
